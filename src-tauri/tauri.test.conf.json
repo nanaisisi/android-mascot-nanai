@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schema.tauri.app/config/2",
+	"productName": "ararat-test",
+	"version": "0.1.0-test",
+	"identifier": "com.ararat.test.app",
+	"build": {
+		"beforeDevCommand": "dx serve --port 1421",
+		"devUrl": "http://localhost:1421",
+		"beforeBuildCommand": "dx build --release",
+		"frontendDist": "../dist"
+	},
+	"app": {
+		"withGlobalTauri": true,
+		"windows": [
+			{
+				"title": "ararat-test",
+				"width": 800,
+				"height": 600
+			}
+		],
+		"security": {
+			"csp": null
+		}
+	}
+}

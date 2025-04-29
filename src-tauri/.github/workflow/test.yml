@@ -1,0 +1,37 @@
+# .github/workflows/test.yml
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          
+      - name: Install dependencies
+        run: |
+          rustup target add wasm32-unknown-unknown
+          cargo install dioxus-cli
+          
+      - name: Run unit tests
+        run: cargo test --lib
+        
+      - name: Run integration tests
+        run: cargo test --test '*'
+        
+      - name: Build test package
+        run: |
+          cargo tauri build
+          
+      - name: Run E2E tests
+        run: cargo test --test 'e2e_*'
