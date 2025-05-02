@@ -5,16 +5,28 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-dioxus = { version = "0.6", features = ["web"] }
+dioxus = { version = "0.6", features = ["web", "desktop"] }
+dioxus-desktop = "0.6"
 dioxus-logger = "0.6.2"
+tauri-sys = { version = "1.0", features = ["all"] }
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4"
 web-sys = "0.3"
 js-sys = "0.3"
 serde = { version = "1", features = ["derive"] }
+serde_json = "1.0"
 serde-wasm-bindgen = "0.6"
 rust-i18n = "3.1.4"
 sys-locale = "0.3.2"
+encoding_rs = "0.8.33"
+
+[lib]
+name = "ararat_ui_lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ararat_ui_bin"
+path = "src/main.rs"
 
 [workspace]
 members = ["src-tauri"]
