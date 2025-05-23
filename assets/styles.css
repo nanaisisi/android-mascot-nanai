@@ -35,6 +35,10 @@ body {
 	line-height: 1.6;
 }
 
+html, body {
+  background: transparent !important;
+}
+
 .container {
 	display: flex;
 	flex-direction: column;
@@ -222,6 +226,11 @@ button {
 
 #greet-input {
 	margin-right: 5px;
+}
+
+main.container {
+  position: relative;
+  z-index: 10000;
 }
 
 @media (prefers-color-scheme: dark) {

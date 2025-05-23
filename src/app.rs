@@ -45,10 +45,22 @@ pub fn App() -> Element {
     });
 
     rsx! {
+<<<<<<< HEAD
         div { class: "container",
             header { class: "app-header",
                 h1 { "Shift-JIS File Viewer" }
             }
+=======
+        link { rel: "stylesheet", href: "styles.css" }
+        // ウィンドウ移動用のドラッグエリアdivを追加
+        div {
+            style: "position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;-webkit-app-region:drag;pointer-events:auto;",
+            // ここに何も描画しないことで、全体をドラッグ可能にする
+        }
+        main {
+            class: "container",
+            h1 { "Welcome to Tauri + Dioxus" }
+>>>>>>> refs/remotes/origin/main
 
             div { class: "app-content",
                 div { class: "sidebar",
