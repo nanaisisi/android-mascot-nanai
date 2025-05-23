@@ -17,6 +17,10 @@
   -webkit-text-size-adjust: 100%;
 }
 
+html, body {
+  background: transparent !important;
+}
+
 .container {
   margin: 0;
   padding-top: 10vh;
@@ -89,6 +93,11 @@ button {
 
 #greet-input {
   margin-right: 5px;
+}
+
+main.container {
+  position: relative;
+  z-index: 10000;
 }
 
 @media (prefers-color-scheme: dark) {
