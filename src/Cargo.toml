@@ -1,9 +1,12 @@
 [package]
-name = "mascot_nanai-ui"
+name = "mascot_nanai_ui"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "mascot_nanai_ui"
+path = "lib.rs"
+
 [dependencies]
 dioxus = { version = "0.6", features = ["web"] }
 dioxus-logger = "0.6.2"
@@ -18,17 +21,6 @@ rust-i18n = "3.1.4"
 sys-locale = "0.3.2"
 encoding_rs = "0.8.33"
 
-[workspace]
-members = ["src-tauri", "src"]
-
-[profile]
-
-[profile.wasm-dev]
-inherits = "dev"
-opt-level = 1
-
-[profile.server-dev]
-inherits = "dev"
-
-[profile.android-dev]
-inherits = "dev"
+[[bin]]
+name = "mascot_nanai_ui_bin"
+path = "main.rs"

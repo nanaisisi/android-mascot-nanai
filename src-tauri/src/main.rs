@@ -1,8 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use mascot_nanai::open_shift_jis_file;
+use mascot_nanai_ui::open_shift_jis_file;
 use std::path::PathBuf;
+use tauri::Manager;
 
 // ファイルを開くコマンド
 #[tauri::command]
