@@ -19,9 +19,6 @@ pub fn open_shift_jis_file(path: &str) -> Result<String, io::Error> {
     Ok(cow.into_owned())
 }
 
-// mascot_nanai_uiとして外部から呼び出せるようにpubで公開
-pub use crate::open_shift_jis_file;
-
 #[cfg(test)]
 mod tests {
     use super::*;
