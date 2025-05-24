@@ -1,14 +1,26 @@
 mod app;
 
+use app::App;
 use dioxus::prelude::*;
+use dioxus_logger::tracing::Level;
+use rust_i18n::i18n;
+use sys_locale;
+
+// 翻訳リソースの設定
+i18n!("locales");
 
 fn main() {
-    dioxus_desktop::launch_cfg(
-        app::App,
-        dioxus_desktop::Config::new().with_window(
-            dioxus_desktop::WindowBuilder::default()
-                .with_title("Shift-JIS ファイルビューア")
-                .with_inner_size(dioxus_desktop::LogicalSize::new(800, 600)),
-        ),
-    );
+    dioxus_logger::init(Level::INFO).expect("failed to init logger");
+
+    // システム言語の検出
+    let system_locale = sys_locale::get_locale().unwrap_or_else(|| "en".to_string());
+
+    // 言語コードの抽出（例: "ja-JP" -> "ja"）
+    let lang_code = system_locale.split('-').next().unwrap_or("en");
+
+    // 言語の設定
+    rust_i18n::set_locale(lang_code);
+
+    // アプリの起動
+    launch(App);
 }
