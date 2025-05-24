@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use ararat::open_shift_jis_file;
+use mascot-nanai::open_shift_jis_file;
 use std::path::PathBuf;
 
 // ファイルを開くコマンド
