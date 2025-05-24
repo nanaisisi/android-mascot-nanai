@@ -1,8 +1,8 @@
 {
 	"$schema": "https://schema.tauri.app/config/2",
-	"productName": "mascot-nanai",
+	"productName": "mascot_nanai",
 	"version": "0.1.0",
-	"identifier": "com.mascot-nanai.app",
+	"identifier": "com.mascot_nanai.app",
 	"build": {
 		"beforeDevCommand": "dx serve --port 1420",
 		"devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
 		"withGlobalTauri": true,
 		"windows": [
 			{
-				"title": "mascot-nanai",
+				"title": "mascot_nanai",
 				"width": 800,
 				"height": 600,
 				"transparent": true,

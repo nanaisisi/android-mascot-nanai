@@ -1,5 +1,5 @@
 [application]
-name = "mascot-nanai-ui"
+name = "mascot_nanai-ui"
 default_platform = "web"
 out_dir = "dist"
 asset_dir = "assets"

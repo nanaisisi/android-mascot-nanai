@@ -1,5 +1,5 @@
 [package]
-name = "mascot-nanai-ui"
+name = "mascot_nanai-ui"
 version = "0.1.0"
 edition = "2021"
 
@@ -21,11 +21,11 @@ sys-locale = "0.3.2"
 encoding_rs = "0.8.33"
 
 [lib]
-name = "mascot-nanai_ui_lib"
+name = "mascot_nanai_ui_lib"
 path = "src/lib.rs"
 
 [[bin]]
-name = "mascot-nanai_ui_bin"
+name = "mascot_nanai_ui_bin"
 path = "src/main.rs"
 
 [workspace]
