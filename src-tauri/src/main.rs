@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use mascot_nanai_ui::open_shift_jis_file;
-use tauri::Manager;
+use tauri::tray::{TrayIconBuilder, TrayIconEvent, TrayMenuBuilder, TrayMenuItemBuilder};
 
 // ファイルを開くコマンド
 #[tauri::command]
@@ -48,6 +48,37 @@ struct AppState {
 
 fn main() {
     tauri::Builder::default()
+        .setup(|app| {
+            let menu = TrayMenuBuilder::new()
+                .item(TrayMenuItemBuilder::with_id("show").text("ウィンドウを表示"))
+                .item(TrayMenuItemBuilder::with_id("quit").text("終了"));
+            let tray = TrayIconBuilder::new()
+                .icon(app.default_window_icon().unwrap().clone())
+                .menu(menu)
+                .on_event(|app, event| match event {
+                    TrayIconEvent::Click { .. } => {
+                        if let Some(window) = app.get_window("main") {
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
+                    }
+                    TrayIconEvent::MenuItemClick { id, .. } => match id.as_str() {
+                        "show" => {
+                            if let Some(window) = app.get_window("main") {
+                                let _ = window.show();
+                                let _ = window.set_focus();
+                            }
+                        }
+                        "quit" => {
+                            std::process::exit(0);
+                        }
+                        _ => {}
+                    },
+                    _ => {}
+                })
+                .build(app)?;
+            Ok(())
+        })
         .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![
             open_file,
