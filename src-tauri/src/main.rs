@@ -2,20 +2,50 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use mascot_nanai_ui::open_shift_jis_file;
-use tauri::tray::{TrayIconBuilder, TrayIconEvent, TrayMenuBuilder, TrayMenuItemBuilder};
+use tauri::Emitter;
+use tauri::Manager;
+use tauri::image::Image;
+use tauri::tray::{TrayIconBuilder, TrayIconEvent};
+
+// エラーメッセージを全ウィンドウにemitするヘルパー関数
+fn emit_error_to_all(app_handle: &tauri::AppHandle<tauri::Wry>, msg: String) {
+    if let Some(window) = app_handle.get_webview_window("main") {
+        if let Err(err) = window.emit("error", msg.clone()) {
+            eprintln!("emit failed: {err}");
+        }
+    }
+}
 
 // ファイルを開くコマンド
 #[tauri::command]
-fn open_file(path: String) -> Result<String, String> {
-    open_shift_jis_file(&path).map_err(|e| e.to_string())
+fn open_file(path: String, app_handle: tauri::AppHandle<tauri::Wry>) -> Result<String, String> {
+    match open_shift_jis_file(&path) {
+        Ok(content) => Ok(content),
+        Err(e) => {
+            let msg = e.to_string();
+            eprintln!("open_file error: {msg}");
+            emit_error_to_all(&app_handle, msg.clone());
+            Err(msg)
+        }
+    }
 }
 
 // 最近開いたファイル履歴を管理するための関数
 #[tauri::command]
-fn add_to_recent_files(path: String, app_handle: tauri::AppHandle) -> Result<(), String> {
-    // アプリケーション状態からrecent_filesを取得または初期化
+fn add_to_recent_files(
+    path: String,
+    app_handle: tauri::AppHandle<tauri::Wry>,
+) -> Result<(), String> {
     let app_state = app_handle.state::<tauri::State<AppState>>();
-    let mut recent_files = app_state.recent_files.lock().map_err(|e| e.to_string())?;
+    let mut recent_files = match app_state.recent_files.lock() {
+        Ok(lock) => lock,
+        Err(e) => {
+            let msg = e.to_string();
+            eprintln!("add_to_recent_files lock error: {msg}");
+            emit_error_to_all(&app_handle, msg.clone());
+            return Err(msg);
+        }
+    };
 
     // 既に存在する場合は削除して先頭に追加（LRU方式）
     if let Some(index) = recent_files.iter().position(|x| *x == path) {
@@ -34,9 +64,17 @@ fn add_to_recent_files(path: String, app_handle: tauri::AppHandle) -> Result<(),
 }
 
 #[tauri::command]
-fn get_recent_files(app_handle: tauri::AppHandle) -> Result<Vec<String>, String> {
+fn get_recent_files(app_handle: tauri::AppHandle<tauri::Wry>) -> Result<Vec<String>, String> {
     let app_state = app_handle.state::<tauri::State<AppState>>();
-    let recent_files = app_state.recent_files.lock().map_err(|e| e.to_string())?;
+    let recent_files = match app_state.recent_files.lock() {
+        Ok(lock) => lock,
+        Err(e) => {
+            let msg = e.to_string();
+            eprintln!("get_recent_files lock error: {msg}");
+            emit_error_to_all(&app_handle, msg.clone());
+            return Err(msg);
+        }
+    };
     Ok(recent_files.clone())
 }
 
@@ -49,31 +87,27 @@ struct AppState {
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
-            let menu = TrayMenuBuilder::new()
-                .item(TrayMenuItemBuilder::with_id("show").text("ウィンドウを表示"))
-                .item(TrayMenuItemBuilder::with_id("quit").text("終了"));
-            let tray = TrayIconBuilder::new()
-                .icon(app.default_window_icon().unwrap().clone())
-                .menu(menu)
-                .on_event(|app, event| match event {
+            let icon = app
+                .default_window_icon()
+                .cloned()
+                .unwrap_or_else(|| Image::new_owned(vec![0, 0, 0, 0], 1, 1));
+            let app_handle = app.app_handle().clone();
+            let _tray = TrayIconBuilder::new()
+                .icon(icon)
+                .on_tray_icon_event(move |_tray, event| match event {
                     TrayIconEvent::Click { .. } => {
-                        if let Some(window) = app.get_window("main") {
-                            let _ = window.show();
-                            let _ = window.set_focus();
+                        if let Some(window) = app_handle.get_webview_window("main") {
+                            if let Err(e) =
+                                window.emit("error", "Failed to show window".to_string())
+                            {
+                                eprintln!("emit failed: {e}");
+                            }
+                        } else {
+                            let msg = "main window not found".to_string();
+                            eprintln!("{msg}");
+                            emit_error_to_all(&app_handle, msg.clone());
                         }
                     }
-                    TrayIconEvent::MenuItemClick { id, .. } => match id.as_str() {
-                        "show" => {
-                            if let Some(window) = app.get_window("main") {
-                                let _ = window.show();
-                                let _ = window.set_focus();
-                            }
-                        }
-                        "quit" => {
-                            std::process::exit(0);
-                        }
-                        _ => {}
-                    },
                     _ => {}
                 })
                 .build(app)?;

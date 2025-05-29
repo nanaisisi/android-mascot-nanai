@@ -2,3 +2,4 @@
 /target/
 /Cargo.lock
 sample
+app-universal-release-signed.apk.idsig
