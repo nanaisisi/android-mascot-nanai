@@ -11,7 +11,8 @@ DLLの代わりに、内部的に呼び出して処理したらいいかなと�
 
 # 実装
 
-src内にcppディレクトリを配置
+Androidでdllを代替するために<br> src内にcppディレクトリを配置、<br>
+内部に各shiori。<br> 内部的に呼び出して使用<br>
 
 # Tauri + Vanilla
 
