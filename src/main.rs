@@ -1,8 +1,6 @@
 mod app;
 
 use app::App;
-use dioxus::prelude::*;
-use dioxus_logger::tracing::Level;
 use rust_i18n::i18n;
 use sys_locale;
 
@@ -10,8 +8,6 @@ use sys_locale;
 i18n!("locales");
 
 fn main() {
-    dioxus_logger::init(Level::INFO).expect("failed to init logger");
-
     // システム言語の検出
     let system_locale = sys_locale::get_locale().unwrap_or_else(|| "en".to_string());
 
