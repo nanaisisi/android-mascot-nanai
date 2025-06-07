@@ -1,6 +1,5 @@
 mod app;
 
-use app::App;
 use rust_i18n::i18n;
 use sys_locale;
 
@@ -18,5 +17,5 @@ fn main() {
     rust_i18n::set_locale(lang_code);
 
     // アプリの起動
-    launch(App);
+    // launch(App);
 }

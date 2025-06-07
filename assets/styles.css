@@ -163,10 +163,6 @@ html, body {
 	filter: drop-shadow(0 0 2em #24c8db);
 }
 
-.logo.dioxus:hover {
-	filter: drop-shadow(0 0 2em #2076a8);
-}
-
 .row {
 	display: flex;
 	justify-content: center;

@@ -8,8 +8,6 @@ name = "mascot_nanai_ui"
 path = "lib.rs"
 
 [dependencies]
-dioxus = { version = "0.6", features = ["web"] }
-dioxus-logger = "0.6.2"
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4"
 web-sys = "0.3"
@@ -20,6 +18,7 @@ serde-wasm-bindgen = "0.6"
 rust-i18n = "3.1.4"
 sys-locale = "0.3.2"
 encoding_rs = "0.8.33"
+
 
 [[bin]]
 name = "mascot_nanai_ui_bin"

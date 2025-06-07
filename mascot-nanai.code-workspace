@@ -32,7 +32,8 @@
       "zignd.html-css-class-completion",
       "xabikos.javascriptsnippets",
       "ms-vscode.vscode-typescript-next",
-      "ms-vscode.js-debug-nightly"
+      "ms-vscode.js-debug-nightly",
+      "kanadelab.surfaces"
     ]
   }
 }
