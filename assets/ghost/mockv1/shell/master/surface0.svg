@@ -60,12 +60,12 @@
        height="600"
        fill="#00fc00"
        stroke-width="0" />
-      <path d="M 50 130 L 60 100 180 50 150 100 300 500 100 500"
+      <path id="body" d="M 50 130 L 60 100 180 50 150 100 300 500 100 500"
        fill="#333333"
        stroke-width="0" />
-      <path d="M 49 130 L 59 99 151 99 151 101 61 100 51 130"
+      <path id="body_outline1" d="M 49 131 L 59 99 151 99 151 101 61 100 51 131"
        fill="#000000"
        stroke-width="0"/>
-      <path d="M 60 06 L 39 39"/>
+      <path id="body_outline2" d="M 60 60 L 39 39"/>
   </g>
 </svg>
