@@ -2,6 +2,32 @@
   "recommendations": [
     "tauri-apps.tauri-vscode",
     "rust-lang.rust-analyzer",
-    "DioxusLabs.dioxus"
+    "vadimcn.vscode-lldb",
+    "biomejs.biome",
+    "jeff-hykin.better-cpp-syntax",
+    "formulahendry.auto-rename-tag",
+    "steoates.autoimport",
+    "formulahendry.auto-close-tag",
+    "adelphes.android-dev-ext",
+    "ms-vscode.cpptools",
+    "ms-vscode.cpptools-extension-pack",
+    "ms-vscode.cpptools-themes",
+    "llvm-vs-code-extensions.vscode-clangd",
+    "twxs.cmake",
+    "josetr.cmake-language-support-vscode",
+    "ms-vscode.cmake-tools",
+    "ryanluker.vscode-coverage-gutters",
+    "firefox-devtools.vscode-firefox-debug",
+    "denoland.vscode-deno",
+    "dbaeumer.vscode-eslint",
+    "tamasfe.even-better-toml",
+    "ms-vscode.vscode-js-profile-flame",
+    "ecmel.vscode-html-css",
+    "wix.vscode-import-cost",
+    "zignd.html-css-class-completion",
+    "xabikos.javascriptsnippets",
+    "ms-vscode.vscode-typescript-next",
+    "ms-vscode.js-debug-nightly",
+    "kanadelab.surfaces"
   ]
 }

@@ -1,0 +1,12 @@
+charset,Shift_JIS
+type,ghost
+name,ゴーストキット改良版Plus（さとりすと用）
+craftman,ghostmaster
+craftmanw,ごーすとますたー
+sakura.name,ちぇっか
+kero.name,てすた
+
+
+
+
+shiori,satori.dll

@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "biome": "npm:biome@^0.3.3"
+  }
+}

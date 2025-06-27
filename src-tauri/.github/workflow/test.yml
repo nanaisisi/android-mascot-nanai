@@ -21,7 +21,6 @@ jobs:
       - name: Install dependencies
         run: |
           rustup target add wasm32-unknown-unknown
-          cargo install dioxus-cli
           
       - name: Run unit tests
         run: cargo test --lib
