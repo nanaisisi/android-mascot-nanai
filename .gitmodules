@@ -1,0 +1,6 @@
+[submodule "src/cpp/yaya-shiori"]
+	path = src/cpp/yaya-shiori
+	url = https://github.com/YAYA-shiori/yaya-shiori.git
+[submodule "src/cpp/satoriya-shiori"]
+	path = src/cpp/satoriya-shiori
+	url = https://github.com/ukatech/satoriya-shiori.git
