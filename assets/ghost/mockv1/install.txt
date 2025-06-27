@@ -1,0 +1,3 @@
+type,ghost
+name,sample
+directory,sample
