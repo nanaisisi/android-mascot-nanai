@@ -11,12 +11,10 @@
       "biomejs.biome",
       "jeff-hykin.better-cpp-syntax",
       "formulahendry.auto-rename-tag",
-      "steoates.autoimport",
       "formulahendry.auto-close-tag",
       "adelphes.android-dev-ext",
       "ms-vscode.cpptools",
       "ms-vscode.cpptools-extension-pack",
-      "ms-vscode.cpptools-themes",
       "llvm-vs-code-extensions.vscode-clangd",
       "twxs.cmake",
       "josetr.cmake-language-support-vscode",
@@ -31,9 +29,9 @@
       "wix.vscode-import-cost",
       "zignd.html-css-class-completion",
       "xabikos.javascriptsnippets",
-      "ms-vscode.vscode-typescript-next",
       "ms-vscode.js-debug-nightly",
-      "kanadelab.surfaces"
+      "kanadelab.surfaces",
+      "yusukehirao.vscode-markuplint"
     ]
   }
 }
