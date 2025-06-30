@@ -1,0 +1,307 @@
+/* ========================================
+ * Balloon View - メッセージ・台詞表示
+ * ======================================== */
+
+.balloon-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 30;
+}
+
+/* ========================================
+ * Balloon Element
+ * ======================================== */
+
+.balloon {
+  position: absolute;
+  max-width: 300px;
+  min-width: 150px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid #333;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  pointer-events: auto;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.balloon.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.balloon.appearing {
+  animation: balloonAppear 0.4s ease-out;
+}
+
+.balloon.disappearing {
+  animation: balloonDisappear 0.3s ease-in;
+}
+
+/* ========================================
+ * Balloon Tail/Arrow
+ * ======================================== */
+
+.balloon::before,
+.balloon::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+/* Bottom tail (pointing up to character) */
+.balloon.tail-bottom::before {
+  bottom: -12px;
+  left: 30px;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 12px solid #333;
+}
+
+.balloon.tail-bottom::after {
+  bottom: -8px;
+  left: 32px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid rgba(255, 255, 255, 0.95);
+}
+
+/* Top tail (pointing down to character) */
+.balloon.tail-top::before {
+  top: -12px;
+  left: 30px;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 12px solid #333;
+}
+
+.balloon.tail-top::after {
+  top: -8px;
+  left: 32px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid rgba(255, 255, 255, 0.95);
+}
+
+/* Left tail (pointing right to character) */
+.balloon.tail-left::before {
+  left: -12px;
+  top: 30px;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-right: 12px solid #333;
+}
+
+.balloon.tail-left::after {
+  left: -8px;
+  top: 32px;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid rgba(255, 255, 255, 0.95);
+}
+
+/* Right tail (pointing left to character) */
+.balloon.tail-right::before {
+  right: -12px;
+  top: 30px;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-left: 12px solid #333;
+}
+
+.balloon.tail-right::after {
+  right: -8px;
+  top: 32px;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid rgba(255, 255, 255, 0.95);
+}
+
+/* ========================================
+ * Balloon Content
+ * ======================================== */
+
+.balloon-text {
+  margin: 0;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.balloon-choices {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.balloon-choice {
+  padding: 8px 12px;
+  background: rgba(33, 150, 243, 0.1);
+  border: 1px solid #2196F3;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #2196F3;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.balloon-choice:hover {
+  background: rgba(33, 150, 243, 0.2);
+  transform: translateY(-1px);
+}
+
+.balloon-choice:active {
+  transform: translateY(0);
+  background: rgba(33, 150, 243, 0.3);
+}
+
+/* ========================================
+ * Auto-dismiss Timer
+ * ======================================== */
+
+.balloon.auto-dismiss {
+  position: relative;
+  overflow: hidden;
+}
+
+.balloon.auto-dismiss::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: #2196F3;
+  animation: timerProgress var(--dismiss-time, 5s) linear;
+}
+
+/* ========================================
+ * Balloon Types
+ * ======================================== */
+
+.balloon.type-talk {
+  border-color: #333;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.balloon.type-think {
+  border-color: #666;
+  border-style: dashed;
+  background: rgba(240, 240, 240, 0.9);
+  font-style: italic;
+}
+
+.balloon.type-shout {
+  border-color: #f44336;
+  border-width: 3px;
+  background: rgba(255, 235, 238, 0.95);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.balloon.type-whisper {
+  border-color: #999;
+  background: rgba(250, 250, 250, 0.8);
+  font-size: 14px;
+  color: #666;
+}
+
+/* ========================================
+ * Mobile Optimizations
+ * ======================================== */
+
+@media (max-width: 480px) {
+  .balloon {
+    max-width: calc(100vw - 40px);
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  
+  .balloon-choice {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  /* Adjust tail size for mobile */
+  .balloon.tail-bottom::before,
+  .balloon.tail-top::before,
+  .balloon.tail-left::before,
+  .balloon.tail-right::before {
+    border-width: 8px;
+  }
+  
+  .balloon.tail-bottom::after,
+  .balloon.tail-top::after,
+  .balloon.tail-left::after,
+  .balloon.tail-right::after {
+    border-width: 6px;
+  }
+}
+
+/* ========================================
+ * Animations
+ * ======================================== */
+
+@keyframes balloonAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(20px);
+  }
+  60% {
+    transform: scale(1.05) translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes balloonDisappear {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+  }
+}
+
+@keyframes timerProgress {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
+}
+
+/* ========================================
+ * Multiple Balloons
+ * ======================================== */
+
+.balloon-container .balloon:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.balloon-container .balloon:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.balloon-container .balloon:nth-child(4) {
+  animation-delay: 0.3s;
+}

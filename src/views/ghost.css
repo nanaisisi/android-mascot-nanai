@@ -1,0 +1,154 @@
+/* ========================================
+ * Ghost View - キャラクター表示
+ * ======================================== */
+
+#ghost-view {
+  background: transparent;
+  z-index: 1;
+}
+
+/* ========================================
+ * Ghost Character
+ * ======================================== */
+
+.ghost-character {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  z-index: 10;
+}
+
+.ghost-character.draggable {
+  cursor: move;
+}
+
+.ghost-character.dragging {
+  z-index: 9999;
+  transition: none;
+}
+
+#ghost-image {
+  width: auto;
+  height: auto;
+  max-width: 200px;
+  max-height: 300px;
+  object-fit: contain;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
+}
+
+/* ========================================
+ * Ghost Interactions
+ * ======================================== */
+
+.ghost-character:hover #ghost-image {
+  transform: scale(1.05);
+  filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.4));
+}
+
+.ghost-character:active #ghost-image {
+  transform: scale(0.95);
+}
+
+/* ========================================
+ * Ghost Controls
+ * ======================================== */
+
+.ghost-controls {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 100;
+}
+
+.ghost-controls .control-btn {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ========================================
+ * Animation States
+ * ======================================== */
+
+.ghost-character.talking #ghost-image {
+  animation: bounce 0.6s ease-in-out infinite alternate;
+}
+
+.ghost-character.idle #ghost-image {
+  animation: float 3s ease-in-out infinite;
+}
+
+.ghost-character.appearing {
+  animation: bounceIn 0.8s ease-out;
+}
+
+.ghost-character.disappearing {
+  animation: bounceOut 0.5s ease-in;
+}
+
+/* ========================================
+ * Animations
+ * ======================================== */
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* ========================================
+ * Touch & Mobile Optimizations
+ * ======================================== */
+
+@media (max-width: 480px) {
+  .ghost-character {
+    max-width: 80vw;
+  }
+  
+  #ghost-image {
+    max-width: 150px;
+    max-height: 225px;
+  }
+  
+  .ghost-controls {
+    bottom: 16px;
+    right: 16px;
+    gap: 8px;
+  }
+}
+
+/* ========================================
+ * Opacity Control
+ * ======================================== */
+
+.ghost-character.transparent {
+  opacity: var(--ghost-opacity, 1);
+}
+
+/* ========================================
+ * Position Memory
+ * ======================================== */
+
+.ghost-character.positioned {
+  top: var(--ghost-top, 50%);
+  left: var(--ghost-left, 50%);
+  transform: translate(-50%, -50%);
+}

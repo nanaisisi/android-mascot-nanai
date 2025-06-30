@@ -10,8 +10,8 @@ Script Player）のコンセプトをAndroid環境に適応させる。
 
 ## 開発段階
 
-1. **Windows 2次**: 基本動作検証（技術検証用）
-2. **Android 3次**: System Overlay での本格実装
+1. **Windows 1次**: 基本動作検証（技術検証用）
+2. **Android 2次**: System Overlay での本格実装
 
 ## UI構成（Android向け）
 
