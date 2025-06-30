@@ -3,100 +3,29 @@
   <head>
     <title>Mascot Nanai</title>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Global Styles -->
+    <!-- Minimal Styles -->
     <link rel="stylesheet" href="styles.css" />
 
-    <!-- View Styles -->
-    <link rel="stylesheet" href="views/ghost.css" />
-    <link rel="stylesheet" href="views/settings.css" />
-    <link rel="stylesheet" href="views/balloon.css" />
-
-    <!-- Scripts -->
+    <!-- Main Controller -->
     <script type="module" src="/main.js"></script>
   </head>
 
   <body>
-    <!-- Single Activity Container -->
+    <!-- Minimal Container for Windows Multi-Window Development -->
     <div id="app-container">
-      <!-- ゴーストビュー: キャラクター表示 -->
-      <div id="ghost-view" class="view active">
-        <div id="ghost-character" class="ghost-character">
-          <img
-            id="ghost-image"
-            src="assets/tauri.svg"
-            alt="なない"
-            width="200"
-            height="300"
-          />
-        </div>
+      <h1>Mascot Nanai - Windows Development</h1>
+      <p>多機能なWindows版の開発を開始します。</p>
 
-        <!-- ゴースト操作ボタン -->
-        <div id="ghost-controls" class="ghost-controls">
-          <button id="settings-btn" class="control-btn">⚙️</button>
-          <button id="talk-btn" class="control-btn">💬</button>
-        </div>
+      <div id="dev-controls">
+        <button id="open-ghost-window">ゴーストウィンドウを開く</button>
+        <button id="open-settings-window">設定ウィンドウを開く</button>
+        <button id="test-yaya-connection">YAYA接続テスト</button>
       </div>
 
-      <!-- 設定ビュー: アプリケーション設定 -->
-      <div id="settings-view" class="view">
-        <div class="settings-container">
-          <div class="settings-header">
-            <button id="settings-back-btn" class="back-btn">←</button>
-            <h2>設定</h2>
-          </div>
-
-          <div class="settings-content">
-            <div class="setting-group">
-              <h3>ゴースト設定</h3>
-              <div class="setting-item">
-                <label for="ghost-select">ゴースト選択</label>
-                <select id="ghost-select">
-                  <option value="mock_nanai">なない（モック）</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="setting-group">
-              <h3>表示設定</h3>
-              <div class="setting-item">
-                <label for="opacity-slider">透明度</label>
-                <input
-                  type="range"
-                  id="opacity-slider"
-                  min="0.3"
-                  max="1"
-                  step="0.1"
-                  value="1"
-                />
-              </div>
-              <div class="setting-item">
-                <label>
-                  <input type="checkbox" id="always-on-top" checked />
-                  常に最前面に表示
-                </label>
-              </div>
-            </div>
-
-            <div class="setting-group">
-              <h3>権限設定</h3>
-              <div class="setting-item">
-                <button id="overlay-permission-btn" class="permission-btn">
-                  オーバーレイ権限を設定
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- バルーンビュー: メッセージ・台詞表示 -->
-      <div id="balloon-view" class="balloon-container">
-        <!-- 動的生成される -->
+      <div id="status">
+        <p>Status: <span id="app-status">Initializing...</span></p>
       </div>
     </div>
   </body>

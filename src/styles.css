@@ -1,6 +1,5 @@
 /* ========================================
- * Global Styles - Single Activity Container
- * Android向けマスコットアプリケーション
+ * Minimal Styles for Windows Development
  * ======================================== */
 
 * {
@@ -9,254 +8,104 @@
   box-sizing: border-box;
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic Pro', 'Meiryo', sans-serif;
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 16px;
   line-height: 1.6;
   color: #333;
-  background: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  padding: 20px;
 }
 
 #app-container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px;
 }
 
-/* ========================================
- * View Management
- * ======================================== */
-
-.view {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  z-index: 1;
+h1 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 28px;
+  text-align: center;
 }
 
-.view.active {
-  opacity: 1;
-  visibility: visible;
+p {
+  color: #7f8c8d;
+  margin-bottom: 30px;
+  text-align: center;
 }
 
-/* ========================================
- * Common Components
- * ======================================== */
-
-.control-btn {
-  width: 48px;
-  height: 48px;
-  border: none;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
-  font-size: 20px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
-}
-
-.control-btn:hover {
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transform: translateY(-1px);
-}
-
-.control-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.back-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: transparent;
-  font-size: 18px;
-  color: #666;
-  cursor: pointer;
-  border-radius: 20px;
-  transition: background 0.2s ease;
-}
-
-.back-btn:hover {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-/* ========================================
- * Touch & Drag Support
- * ======================================== */
-
-.draggable {
-  touch-action: none;
-  cursor: move;
-}
-
-.dragging {
-  pointer-events: none;
-  z-index: 9999;
-}
-
-/* ========================================
- * Android-like Design Elements
- * ======================================== */
-
-.setting-group {
-  margin-bottom: 24px;
-}
-
-.setting-group h3 {
-  font-size: 14px;
-  font-weight: 600;
-  color: #666;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.setting-item {
+#dev-controls {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
 }
 
-.setting-item:last-child {
-  border-bottom: none;
-}
-
-.setting-item label {
+button {
+  padding: 15px 25px;
   font-size: 16px;
-  color: #333;
-  flex: 1;
-}
-
-.setting-item input,
-.setting-item select {
-  margin-left: 16px;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.setting-item input[type="range"] {
-  width: 120px;
-}
-
-.setting-item input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  margin-left: 8px;
-}
-
-.permission-btn {
-  padding: 12px 24px;
-  background: #2196F3;
-  color: white;
+  font-weight: 600;
   border: none;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
 }
 
-.permission-btn:hover {
-  background: #1976D2;
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+#status {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  border-left: 4px solid #28a745;
+}
+
+#status p {
+  margin: 0;
+  color: #495057;
+  text-align: left;
+}
+
+#app-status {
+  font-weight: 600;
+  color: #28a745;
 }
 
 /* ========================================
  * Responsive Design
  * ======================================== */
 
-@media (max-width: 480px) {
-  .control-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
   }
   
-  .setting-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  #app-container {
+    padding: 20px;
   }
   
-  .setting-item input,
-  .setting-item select {
-    margin-left: 0;
-    width: 100%;
+  h1 {
+    font-size: 24px;
   }
-}
-
-/* ========================================
- * Animations
- * ======================================== */
-
-@keyframes slideInUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideOutDown {
-  from {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-}
-
-@keyframes bounceIn {
-  0% {
-    transform: scale(0.3);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes bounceOut {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  25% {
-    transform: scale(0.95);
-  }
-  100% {
-    transform: scale(0.3);
-    opacity: 0;
+  
+  button {
+    padding: 12px 20px;
+    font-size: 14px;
   }
 }

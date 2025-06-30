@@ -1,219 +1,162 @@
 /**
- * Main Application Controller
- * Single Activity Container管理
+ * Mascot Nanai - Windows Development Main Controller
+ * 多機能なWindows版マスコットアプリケーション
  */
 
-// モジュールのインポート
-import { GhostController } from './scripts/ghost-controller.js';
-import { SettingsController } from './scripts/settings-controller.js';
-import { BalloonController } from './scripts/balloon-controller.js';
-import { AndroidAdapter } from './scripts/android-adapter.js';
-
-class MascotNanaiApp {
+class MascotNanaiWindowsApp {
   constructor() {
-    this.currentView = 'ghost-view';
-    this.controllers = {};
-    this.androidAdapter = null;
+    this.windowManager = null;
+    this.yayaConnection = null;
+    this.isInitialized = false;
     
     this.init();
   }
 
   async init() {
-    console.log('🎭 Mascot Nanai App initializing...');
+    console.log('🎭 Mascot Nanai Windows App initializing...');
     
     try {
-      // Android環境の初期化
-      this.androidAdapter = new AndroidAdapter();
-      await this.androidAdapter.init();
+      this.updateStatus('Initializing Windows environment...');
       
-      // コントローラーの初期化
-      this.initControllers();
+      // Windows環境の初期化
+      await this.initWindowsEnvironment();
       
       // イベントリスナーの設定
       this.setupEventListeners();
       
-      // 初期ビューの表示
-      this.showView('ghost-view');
+      // YAYA接続の準備
+      await this.prepareYAYAConnection();
       
-      console.log('✅ App initialized successfully');
+      this.isInitialized = true;
+      this.updateStatus('Ready for Windows development');
       
-      // デバッグ用：3秒後にテストメッセージを表示
-      setTimeout(() => {
-        this.controllers.balloon.showMessage('こんにちは！なないです〜♪', {
-          type: 'talk',
-          duration: 3000,
-          choices: ['おはよう！', 'こんにちは']
-        });
-      }, 3000);
+      console.log('✅ Windows App initialized successfully');
       
     } catch (error) {
-      console.error('❌ Failed to initialize app:', error);
+      console.error('❌ Failed to initialize Windows app:', error);
+      this.updateStatus(`Error: ${error.message}`);
     }
   }
 
-  initControllers() {
-    // ゴーストコントローラー
-    this.controllers.ghost = new GhostController();
+  async initWindowsEnvironment() {
+    // Tauri Windows機能の初期化準備
+    console.log('🪟 Preparing Windows-specific features...');
     
-    // 設定コントローラー
-    this.controllers.settings = new SettingsController();
-    
-    // バルーンコントローラー
-    this.controllers.balloon = new BalloonController();
-    
-    // コントローラー間の連携設定
-    this.setupControllerInteractions();
-  }
-
-  setupControllerInteractions() {
-    // ゴースト -> バルーン：位置連動
-    this.controllers.ghost.on('positionChanged', (position) => {
-      this.controllers.balloon.updateGhostPosition(position);
-    });
-    
-    // ゴースト -> バルーン：話す
-    this.controllers.ghost.on('talk', (message) => {
-      this.controllers.balloon.showMessage(message);
-    });
-    
-    // 設定 -> ゴースト：透明度変更
-    this.controllers.settings.on('opacityChanged', (opacity) => {
-      this.controllers.ghost.setOpacity(opacity);
-    });
-    
-    // 設定 -> ゴースト：ゴースト変更
-    this.controllers.settings.on('ghostChanged', (ghostId) => {
-      this.controllers.ghost.changeGhost(ghostId);
-    });
+    // 将来的にTauri Window管理機能を実装
+    // - 複数ウィンドウ管理
+    // - 透過ウィンドウ
+    // - Always On Top
+    // - システムトレイ
   }
 
   setupEventListeners() {
-    // 設定ボタン
-    const settingsBtn = document.getElementById('settings-btn');
-    if (settingsBtn) {
-      settingsBtn.addEventListener('click', () => {
-        this.showView('settings-view');
+    // ゴーストウィンドウを開く
+    const openGhostBtn = document.getElementById('open-ghost-window');
+    if (openGhostBtn) {
+      openGhostBtn.addEventListener('click', () => {
+        this.openGhostWindow();
       });
     }
 
-    // 設定戻るボタン
-    const settingsBackBtn = document.getElementById('settings-back-btn');
-    if (settingsBackBtn) {
-      settingsBackBtn.addEventListener('click', () => {
-        this.showView('ghost-view');
+    // 設定ウィンドウを開く
+    const openSettingsBtn = document.getElementById('open-settings-window');
+    if (openSettingsBtn) {
+      openSettingsBtn.addEventListener('click', () => {
+        this.openSettingsWindow();
       });
     }
 
-    // 話すボタン
-    const talkBtn = document.getElementById('talk-btn');
-    if (talkBtn) {
-      talkBtn.addEventListener('click', () => {
-        this.controllers.ghost.randomTalk();
+    // YAYA接続テスト
+    const testYayaBtn = document.getElementById('test-yaya-connection');
+    if (testYayaBtn) {
+      testYayaBtn.addEventListener('click', () => {
+        this.testYAYAConnection();
       });
     }
+  }
 
-    // Android戻るボタン対応
-    if (this.androidAdapter) {
-      this.androidAdapter.on('backPressed', () => {
-        this.handleBackPress();
-      });
+  async prepareYAYAConnection() {
+    console.log('🤖 Preparing YAYA connection...');
+    
+    // YAYA Shiori DLL接続の準備
+    // 将来的にTauri経由でDLL呼び出しを実装
+    this.updateStatus('YAYA connection prepared (stub)');
+  }
+
+  async openGhostWindow() {
+    console.log('👻 Opening ghost window...');
+    this.updateStatus('Opening ghost window...');
+    
+    try {
+      // 将来的に独立したゴーストウィンドウを作成
+      alert('ゴーストウィンドウ機能は実装予定です\\n\\n予定機能:\\n- 透過フローティング表示\\n- ドラッグ移動\\n- YAYAとの連携\\n- 豊富なアニメーション');
+      this.updateStatus('Ghost window feature planned');
+      
+    } catch (error) {
+      console.error('❌ Failed to open ghost window:', error);
+      this.updateStatus(`Error opening ghost window: ${error.message}`);
     }
+  }
 
-    // 画面回転対応
-    globalThis.addEventListener('orientationchange', () => {
+  async openSettingsWindow() {
+    console.log('⚙️ Opening settings window...');
+    this.updateStatus('Opening settings window...');
+    
+    try {
+      // 将来的に独立した設定ウィンドウを作成
+      alert('設定ウィンドウ機能は実装予定です\\n\\n予定機能:\\n- ゴースト選択・管理\\n- 表示設定\\n- YAYA設定\\n- システム連携設定');
+      this.updateStatus('Settings window feature planned');
+      
+    } catch (error) {
+      console.error('❌ Failed to open settings window:', error);
+      this.updateStatus(`Error opening settings window: ${error.message}`);
+    }
+  }
+
+  async testYAYAConnection() {
+    console.log('🔧 Testing YAYA connection...');
+    this.updateStatus('Testing YAYA connection...');
+    
+    try {
+      // 将来的にYAYA Shiori DLLとの接続テストを実装
       setTimeout(() => {
-        this.controllers.ghost.adjustPosition();
-      }, 100);
-    });
-
-    // ビジビリティ変更（アプリがバックグラウンドに行った時など）
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        this.controllers.ghost.pause();
-      } else {
-        this.controllers.ghost.resume();
-      }
-    });
-  }
-
-  showView(viewId) {
-    console.log(`🔄 Switching to view: ${viewId}`);
-    
-    // 現在のビューを非表示
-    const currentViewElement = document.getElementById(this.currentView);
-    if (currentViewElement) {
-      currentViewElement.classList.remove('active');
-    }
-
-    // 新しいビューを表示
-    const newViewElement = document.getElementById(viewId);
-    if (newViewElement) {
-      newViewElement.classList.add('active');
-      this.currentView = viewId;
-      
-      // ビュー切り替えアニメーション
-      this.animateViewTransition(viewId);
-    }
-  }
-
-  animateViewTransition(viewId) {
-    const viewElement = document.getElementById(viewId);
-    if (!viewElement) return;
-
-    switch (viewId) {
-      case 'settings-view':
-        viewElement.classList.add('slide-in');
-        setTimeout(() => {
-          viewElement.classList.remove('slide-in');
-        }, 300);
-        break;
-      
-      case 'ghost-view':
-        // ゴーストビューに戻る時のアニメーション
-        this.controllers.ghost.playAppearAnimation();
-        break;
-    }
-  }
-
-  handleBackPress() {
-    console.log('📱 Back button pressed');
-    
-    switch (this.currentView) {
-      case 'settings-view':
-        this.showView('ghost-view');
-        return true; // イベントを消費
-      
-      case 'ghost-view':
-        // ゴーストビューでバックボタンが押された場合はアプリを最小化
-        if (this.androidAdapter) {
-          this.androidAdapter.minimizeApp();
+        const success = Math.random() > 0.3; // 70%で成功をシミュレート
+        
+        if (success) {
+          alert('YAYA接続テスト成功！\\n\\n将来的な実装:\\n- SHIORI DLL読み込み\\n- リクエスト/レスポンス処理\\n- エラーハンドリング');
+          this.updateStatus('YAYA connection test: Success (simulated)');
+        } else {
+          alert('YAYA接続テスト失敗\\n\\nこれはシミュレーションです。\\n実際の実装では詳細なエラー情報を表示します。');
+          this.updateStatus('YAYA connection test: Failed (simulated)');
         }
-        return true;
+      }, 1000);
       
-      default:
-        return false; // デフォルト動作を許可
+    } catch (error) {
+      console.error('❌ YAYA connection test failed:', error);
+      this.updateStatus(`YAYA test error: ${error.message}`);
     }
   }
 
-  // 外部API
-  showMessage(text, options = {}) {
-    return this.controllers.balloon.showMessage(text, options);
+  updateStatus(message) {
+    const statusElement = document.getElementById('app-status');
+    if (statusElement) {
+      statusElement.textContent = message;
+    }
+    console.log(`📊 Status: ${message}`);
   }
 
-  changeGhost(ghostId) {
-    return this.controllers.ghost.changeGhost(ghostId);
-  }
-
-  getSettings() {
-    return this.controllers.settings.getSettings();
-  }
-
-  updateSettings(settings) {
-    return this.controllers.settings.updateSettings(settings);
+  // 外部API（将来の拡張用）
+  getAppInfo() {
+    return {
+      isInitialized: this.isInitialized,
+      platform: 'Windows',
+      hasYAYA: this.yayaConnection !== null,
+      version: '0.1.0-dev'
+    };
   }
 }
 
-// グローバルインスタンス
+// アプリケーション初期化
 let app = null;
 
 // DOM読み込み完了後に初期化
@@ -224,7 +167,7 @@ if (document.readyState === 'loading') {
 }
 
 function initApp() {
-  app = new MascotNanaiApp();
+  app = new MascotNanaiWindowsApp();
   
   // デバッグ用：グローバルアクセス
   if (typeof globalThis !== 'undefined') {
@@ -232,4 +175,4 @@ function initApp() {
   }
 }
 
-export { MascotNanaiApp };
+export { MascotNanaiWindowsApp };
