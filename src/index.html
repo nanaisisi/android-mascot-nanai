@@ -21,6 +21,118 @@
 
     <!-- メインコントローラ -->
     <script type="module" src="/main.js"></script>
+    
+    <!-- 直接的なメニュー制御スクリプト -->
+    <script>
+      // メニューの直接制御関数
+      function toggleMenuDirect() {
+        console.log('メニューボタンがクリックされました');
+        const dropdown = document.getElementById('menu-dropdown');
+        if (dropdown) {
+          const isVisible = dropdown.classList.contains('show');
+          if (isVisible) {
+            dropdown.classList.remove('show');
+            console.log('メニューを非表示にしました');
+          } else {
+            dropdown.classList.add('show');
+            console.log('メニューを表示しました');
+          }
+        } else {
+          console.error('メニュードロップダウンが見つかりません');
+        }
+      }
+      
+      // モーダルを開く直接関数
+      function openModal(contentId) {
+        console.log('モーダルを開きます:', contentId);
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalContent = document.getElementById('modal-content');
+        const sourceContent = document.getElementById(contentId);
+        
+        // メニューを閉じる
+        const dropdown = document.getElementById('menu-dropdown');
+        if (dropdown) {
+          dropdown.classList.remove('show');
+        }
+        
+        if (modalOverlay && modalContent && sourceContent) {
+          modalContent.innerHTML = sourceContent.innerHTML;
+          modalOverlay.style.display = 'flex';
+          console.log('モーダルを表示しました');
+        } else {
+          console.error('モーダル要素が見つかりません');
+        }
+      }
+      
+      // モーダルを閉じる関数
+      function closeModal() {
+        console.log('モーダルを閉じます');
+        const modalOverlay = document.getElementById('modal-overlay');
+        if (modalOverlay) {
+          modalOverlay.style.display = 'none';
+        }
+      }
+      
+      // ページ読み込み後の初期化
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM読み込み完了');
+        
+        // メニューボタンのテスト
+        const menuBtn = document.getElementById('menu-btn');
+        const dropdown = document.getElementById('menu-dropdown');
+        
+        if (!menuBtn) {
+          console.error('メニューボタンが見つかりません');
+        } else {
+          console.log('メニューボタンが見つかりました');
+          
+          // デバッグ用のスタイル追加
+          menuBtn.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+          menuBtn.style.border = '2px solid red';  // デバッグ用に赤枠追加
+          
+          // 強制的にイベントリスナーを追加
+          menuBtn.addEventListener('click', function(e) {
+            console.log('追加のクリックイベント');
+            toggleMenuDirect();
+          });
+        }
+        
+        if (!dropdown) {
+          console.error('メニュードロップダウンが見つかりません');
+        } else {
+          console.log('メニュードロップダウンが見つかりました');
+          // デバッグ用のスタイル追加
+          dropdown.style.border = '2px solid blue';  // デバッグ用に青枠追加
+        }
+        
+        // モーダル閉じるボタンの設定
+        const modalClose = document.getElementById('modal-close');
+        if (modalClose) {
+          modalClose.onclick = closeModal;
+        }
+        
+        // モーダルオーバーレイクリックで閉じる
+        const modalOverlay = document.getElementById('modal-overlay');
+        if (modalOverlay) {
+          modalOverlay.onclick = function(e) {
+            if (e.target === modalOverlay) {
+              closeModal();
+            }
+          };
+        }
+        
+        // メニュー外クリックで閉じる
+        document.onclick = function(e) {
+          const menu = document.getElementById('menu-dropdown');
+          const menuBtn = document.getElementById('menu-btn');
+          if (menu && menuBtn && !menuBtn.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.remove('show');
+          }
+        };
+        
+        console.log('メニューとモーダルの初期化完了');
+      });
+    </script>
   </head>
 
   <body>
@@ -28,15 +140,15 @@
     <div class="container">
       <!-- 右上メニューボタンのみ -->
       <div class="top-right-menu">
-        <button class="menu-btn" id="menu-btn" title="メニュー">☰</button>
+        <button class="menu-btn" id="menu-btn" title="メニュー" onclick="toggleMenuDirect()">☰</button>
         <div class="menu-dropdown" id="menu-dropdown">
-          <button class="menu-item" id="ghost-btn">👻 ゴースト管理</button>
-          <button class="menu-item" id="balloon-btn">💭 バルーン管理</button>
-          <button class="menu-item" id="scan-btn">🔍 スキャン</button>
-          <button class="menu-item" id="test-btn">🧪 テスト</button>
-          <button class="menu-item" id="settings-btn">⚙️ 設定</button>
-          <button class="menu-item" id="debug-btn">🐛 デバッグ</button>
-          <button class="menu-item" id="help-btn">❓ ヘルプ</button>
+          <button class="menu-item" id="ghost-btn" onclick="openModal('ghost-modal-content')">👻 ゴースト管理</button>
+          <button class="menu-item" id="balloon-btn" onclick="openModal('balloon-modal-content')">💭 バルーン管理</button>
+          <button class="menu-item" id="scan-btn" onclick="openModal('scan-modal-content')">🔍 スキャン</button>
+          <button class="menu-item" id="test-btn" onclick="openModal('test-modal-content')">🧪 テスト</button>
+          <button class="menu-item" id="settings-btn" onclick="openModal('settings-modal-content')">⚙️ 設定</button>
+          <button class="menu-item" id="debug-btn" onclick="openModal('debug-modal-content')">🐛 デバッグ</button>
+          <button class="menu-item" id="help-btn" onclick="openModal('help-modal-content')">❓ ヘルプ</button>
         </div>
       </div>
 
@@ -59,9 +171,9 @@
         </div>
 
         <!-- ステータス表示 -->
-        <div class="status-bar" id="status-bar">
+        <div class="status-bar" id="status-bar" style="display: none;">
           <span class="status-indicator" id="connection-status"></span>
-          <span id="status-text">準備中</span>
+          <span id="status-text"></span>
         </div>
       </div>
     </div>

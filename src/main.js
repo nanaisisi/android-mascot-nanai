@@ -25,8 +25,6 @@ class MascotNanaiApp {
     console.log('👻 Mascot Nanai 透過マスコット版開始...');
     
     try {
-      this.updateStatus('UI初期化中...', false);
-      
       // UI環境の初期化
       await this.initUIEnvironment();
       
@@ -46,7 +44,6 @@ class MascotNanaiApp {
       
       // 初期化完了
       this.isInitialized = true;
-      this.updateStatus('準備完了', true);
       
       // 初期状態では何も表示しない
       this.updateGhostCharacter(null);
@@ -54,15 +51,10 @@ class MascotNanaiApp {
       // 秒間隔イベントの開始
       this.startSecondTimer();
       
-      // 初期メッセージ表示（3秒後に非表示）
-      this.showBalloon('Mascot Nanaiへようこそ！右上メニューからゴーストを選択してください。');
-      setTimeout(() => this.hideBalloon(), 3000);
-      
       console.log('✅ 透過マスコットUI初期化完了');
       
     } catch (error) {
       console.error('❌ UI初期化に失敗:', error);
-      this.updateStatus(`エラー: ${error.message}`, false);
     }
   }
 
@@ -190,10 +182,16 @@ class MascotNanaiApp {
     const menuBtn = document.getElementById('menu-btn');
     const menuDropdown = document.getElementById('menu-dropdown');
     
-    menuBtn?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.toggleMenu(menuDropdown);
-    });
+    if (menuBtn) {
+      menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleMenu(menuDropdown);
+        console.log('メニューボタンクリック');
+      });
+      console.log('✅ メニューボタンのイベントリスナー設定完了');
+    } else {
+      console.error('❌ メニューボタンが見つかりません');
+    }
 
     // メニュー外をクリックしたら閉じる
     document.addEventListener('click', () => {
@@ -202,28 +200,46 @@ class MascotNanaiApp {
 
     // メニューアイテム
     document.getElementById('ghost-btn')?.addEventListener('click', () => {
+      console.log('ゴーストボタンクリック');
       this.hideMenu(menuDropdown);
       this.showGhostModal();
     });
     
     document.getElementById('balloon-btn')?.addEventListener('click', () => {
+      console.log('バルーンボタンクリック');
       this.hideMenu(menuDropdown);
       this.showBalloonModal();
     });
     
     document.getElementById('scan-btn')?.addEventListener('click', () => {
+      console.log('スキャンボタンクリック');
       this.hideMenu(menuDropdown);
       this.showScanModal();
     });
     
     document.getElementById('test-btn')?.addEventListener('click', () => {
+      console.log('テストボタンクリック');
       this.hideMenu(menuDropdown);
       this.showTestModal();
     });
 
     document.getElementById('settings-btn')?.addEventListener('click', () => {
+      console.log('設定ボタンクリック');
       this.hideMenu(menuDropdown);
       this.showSettingsModal();
+    });
+    
+    document.getElementById('debug-btn')?.addEventListener('click', () => {
+      console.log('デバッグボタンクリック');
+      this.hideMenu(menuDropdown);
+      this.showDebugModal();
+    });
+    
+    document.getElementById('help-btn')?.addEventListener('click', () => {
+      console.log('ヘルプボタンクリック');
+      this.hideMenu(menuDropdown);
+      this.showHelpModal();
+    });
     });
     
     document.getElementById('debug-btn')?.addEventListener('click', () => {
@@ -419,7 +435,14 @@ class MascotNanaiApp {
   // ===========================================
 
   toggleMenu(menu) {
-    if (!menu) return;
+    if (!menu) {
+      console.error('メニュー要素が見つかりません');
+      return;
+    }
+    
+    const isCurrentlyVisible = menu.classList.contains('show');
+    console.log(`メニュー表示切り替え: ${isCurrentlyVisible ? '非表示' : '表示'}`);
+    
     menu.classList.toggle('show');
   }
 
@@ -978,14 +1001,9 @@ class MascotNanaiApp {
   // ===========================================
 
   updateStatus(text, connected = null) {
-    if (this.elements.statusText) {
-      this.elements.statusText.textContent = text;
-    }
-    
-    if (connected !== null && this.elements.connectionStatus) {
-      this.elements.connectionStatus.className = connected 
-        ? 'status-indicator connected' 
-        : 'status-indicator';
+    // ステータス表示を無効化 - 右上メニューに集中するため
+    console.log(`Status: ${text} (Connected: ${connected})`);
+  }
     }
   }
 }
