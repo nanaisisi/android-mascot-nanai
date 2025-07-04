@@ -107,8 +107,9 @@ src/
 
 ```
 src/windows/               (Windows検証時のみ)
+|── splashscreen.html     (Splashscreenウィンドウ)
 ├── ghost.html            (独立ゴーストウィンドウ)
-├── settings.html         (独立設定ウィンドウ)  
+├── settings.html         (独立設定ウィンドウ)
 └── balloon.html          (独立バルーンウィンドウ)
 ```
 
