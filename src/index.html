@@ -3,7 +3,18 @@
   <head>
     <title>Mascot Nanai</title>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes, viewport-fit=cover"
+    />
+
+    <!-- Android向け最適化 -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
 
     <!-- Android向けUI検証用スタイル -->
     <link rel="stylesheet" href="styles.css" />
@@ -61,8 +72,27 @@
             <button id="test-shiori">SHIORI テスト</button>
             <button id="load-test-ghost">テストゴースト読み込み</button>
           </div>
-          <div id="ghost-list" class="ghost-list"></div>
-          <div id="shiori-response" class="response-area"></div>
+          <div
+            id="ghost-list"
+            class="ghost-list"
+            title="ダブルクリックで全選択"
+          ></div>
+          <div
+            id="shiori-response"
+            class="response-area"
+            title="ダブルクリックまたは長押しで全選択"
+          ></div>
+          <div
+            style="
+              font-size: 12px;
+              color: #666;
+              margin-top: 10px;
+              text-align: center;
+            "
+          >
+            💡 ヒント:
+            レスポンスエリアをダブルクリック/長押しで全選択、Ctrl+C（またはコピー）でクリップボードにコピーできます
+          </div>
         </div>
       </div>
 

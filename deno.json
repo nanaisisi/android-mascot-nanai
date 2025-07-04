@@ -1,5 +1,6 @@
 {
   "imports": {
-    "biome": "npm:biome@^0.3.3"
+    "biome": "npm:biome@^0.3.3",
+    "markuplint": "npm:markuplint@^4.12.0"
   }
 }

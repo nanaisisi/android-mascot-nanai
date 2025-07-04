@@ -1,11 +1,16 @@
 use mascot_nanai_ui::open_shift_jis_file;
-use tauri::menu::MenuBuilder;
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use std::path::PathBuf;
 use std::sync::Arc;
 use tauri::Emitter;
 use tauri::Manager;
+
+// Desktop専用の機能
+#[cfg(desktop)]
+use tauri::menu::MenuBuilder;
+#[cfg(desktop)]
 use tauri::image::Image;
+#[cfg(desktop)]
 use tauri::tray::{TrayIconBuilder, TrayIconEvent};
 
 // SHIORI関連モジュール
@@ -109,7 +114,18 @@ async fn scan_ghost_directory(
     state: tauri::State<'_, AppState>,
     ghost_dir: String,
 ) -> Result<Vec<GhostInfo>, String> {
-    let ghost_path = PathBuf::from(ghost_dir);
+    // パスが相対パスの場合はワークスペースルートからの絶対パスに変換
+    let ghost_path = {
+        let path = PathBuf::from(&ghost_dir);
+        if path.is_absolute() {
+            path
+        } else {
+            // src-tauri/../assets/ghost のように解決
+            let exe_dir = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
+            let project_root = exe_dir.parent().unwrap_or(&exe_dir);
+            project_root.join(path)
+        }
+    };
 
     state.shiori_manager.scan_ghost_directory(&ghost_path)?;
 

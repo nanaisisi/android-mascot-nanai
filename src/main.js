@@ -124,6 +124,69 @@ class MascotNanaiApp {
         this.debugTest();
       });
     }
+
+    // テキストコピー機能の強化
+    this.setupTextCopyFeatures();
+  }
+
+  setupTextCopyFeatures() {
+    // レスポンスエリアでのテキストコピー機能強化
+    const responseArea = document.getElementById('shiori-response');
+    if (responseArea) {
+      // ダブルクリックで全選択
+      responseArea.addEventListener('dblclick', () => {
+        this.selectAllText(responseArea);
+      });
+
+      // 右クリックでコンテキストメニュー（コピー）
+      responseArea.addEventListener('contextmenu', (e) => {
+        // ブラウザのデフォルトコンテキストメニューを有効にする
+        e.stopPropagation();
+      });
+
+      // 長押しでテキスト選択（モバイル対応）
+      let touchTimer = null;
+      responseArea.addEventListener('touchstart', (e) => {
+        touchTimer = setTimeout(() => {
+          this.selectAllText(responseArea);
+        }, 800); // 800ms長押し
+      });
+
+      responseArea.addEventListener('touchend', () => {
+        if (touchTimer) {
+          clearTimeout(touchTimer);
+          touchTimer = null;
+        }
+      });
+
+      responseArea.addEventListener('touchmove', () => {
+        if (touchTimer) {
+          clearTimeout(touchTimer);
+          touchTimer = null;
+        }
+      });
+    }
+
+    // ゴーストリストでも同様の機能を追加
+    const ghostList = document.getElementById('ghost-list');
+    if (ghostList) {
+      ghostList.addEventListener('dblclick', () => {
+        this.selectAllText(ghostList);
+      });
+    }
+  }
+
+  selectAllText(element) {
+    if (window.getSelection) {
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      
+      console.log('📋 テキスト全選択完了');
+      this.updateStatus('テキストを全選択しました（Ctrl+Cでコピー）');
+    }
   }
 
   showView(viewName) {

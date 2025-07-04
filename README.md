@@ -30,9 +30,9 @@ CSS and Javascript.
 
 # How build
 
-cargo tauri dev
+cargo tauri dev<br>
 
-cargo tauri android build -d -t aarch64
+#署名無視build、apk<br>cargo tauri android build -d -t aarch64
 
 # ライセンス
 
