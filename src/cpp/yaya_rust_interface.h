@@ -8,6 +8,18 @@
 #ifndef YAYA_RUST_INTERFACE_H
 #define YAYA_RUST_INTERFACE_H
 
+// プラットフォーム固有の設定
+#ifdef ANDROID
+    // Android固有の設定
+    #define PLATFORM_ANDROID
+#elif defined(WIN32) || defined(_WIN32)
+    // Windows固有の設定
+    #define PLATFORM_WINDOWS
+#else
+    // その他のPOSIX環境
+    #define PLATFORM_POSIX
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

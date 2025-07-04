@@ -14,22 +14,25 @@ fn build_yaya_shiori_stub() {
     let mut build = cc::Build::new();
 
     // C++標準とコンパイラ設定
-    build.cpp(true).std("c++17").flag_if_supported("-std=c++17");
+    build.cpp(true).std("c++17");
 
-    // Windowsでの設定
-    #[cfg(target_os = "windows")]
-    {
+    // ターゲットプラットフォームに基づく設定
+    let target = std::env::var("TARGET").unwrap_or_default();
+
+    if target.contains("windows") {
+        // Windows固有の設定
         build
             .define("WIN32", None)
             .define("_WINDOWS", None)
             .define("_CRT_SECURE_NO_WARNINGS", None)
-            .flag("/EHsc"); // C++例外処理を有効化
-    }
-
-    // Linuxでの設定
-    #[cfg(target_os = "linux")]
-    {
-        build.define("POSIX", None);
+            .flag_if_supported("/EHsc"); // C++例外処理を有効化
+    } else if target.contains("android") || target.contains("linux") {
+        // Android/Linux固有の設定
+        build
+            .define("POSIX", None)
+            .define("ANDROID", None)
+            .flag_if_supported("-fexceptions") // C++例外処理を有効化
+            .flag_if_supported("-frtti"); // RTTI有効化
     }
 
     let cpp_interface_dir = Path::new("../src/cpp");

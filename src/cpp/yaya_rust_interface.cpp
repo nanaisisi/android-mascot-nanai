@@ -9,6 +9,22 @@
 #include <cstring>
 #include <cstdlib>
 
+// プラットフォーム固有の設定
+#ifdef ANDROID
+    // Android固有の設定
+    #ifndef PATH_MAX
+        #define PATH_MAX 4096
+    #endif
+#elif defined(WIN32) || defined(_WIN32)
+    // Windows固有の設定
+    #ifndef PATH_MAX
+        #define PATH_MAX 260
+    #endif
+#else
+    // その他のPOSIX環境
+    #include <limits.h>
+#endif
+
 // YAYAの実際の関数を宣言（将来のために）
 // TODO: 将来的には aya5.h をインクルードして実際のYAYA関数を呼び出す
 /*
@@ -22,7 +38,7 @@ extern "C" {
 
 // YAYAの初期化状態管理
 static bool g_yaya_initialized = false;
-static char g_ghost_directory[512] = {0};
+static char g_ghost_directory[PATH_MAX] = {0};
 
 // C言語インターフェイス実装（スタブ版）
 
