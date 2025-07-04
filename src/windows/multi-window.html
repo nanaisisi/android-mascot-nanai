@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mascot Nanai - ウィンドウ管理</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", "Meiryo", sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: #333;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .window-manager {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        color: #2c3e50;
+        font-size: 28px;
+        font-weight: 300;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        color: #7f8c8d;
+        font-size: 16px;
+      }
+
+      .window-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .window-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .window-card:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+      }
+
+      .window-card.active {
+        border-color: #28a745;
+        background: #f8fff9;
+      }
+
+      .window-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .window-status {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #dc3545;
+      }
+
+      .window-status.active {
+        background: #28a745;
+      }
+
+      .window-description {
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 15px;
+        line-height: 1.4;
+      }
+
+      .window-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex: 1;
+        min-width: 80px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-success {
+        background: #28a745;
+        color: white;
+      }
+
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .global-controls {
+        background: #e9ecef;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .global-controls h3 {
+        color: #495057;
+        margin-bottom: 15px;
+        font-size: 16px;
+      }
+
+      .global-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .settings-panel {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+      }
+
+      .settings-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .settings-row:last-child {
+        border-bottom: none;
+      }
+
+      .settings-label {
+        font-weight: 500;
+        color: #495057;
+      }
+
+      .settings-value {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      input[type="range"] {
+        width: 120px;
+      }
+
+      .status-indicator {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        background: #dc3545;
+        color: white;
+      }
+
+      .status-indicator.active {
+        background: #28a745;
+      }
+
+      @media (max-width: 768px) {
+        .window-controls {
+          grid-template-columns: 1fr;
+        }
+
+        .global-actions {
+          flex-direction: column;
+        }
+
+        .btn {
+          min-width: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="window-manager">
+      <div class="header">
+        <h1>ウィンドウ管理センター</h1>
+        <p>デスクトップマスコットの各ウィンドウを制御・管理</p>
+      </div>
+
+      <div class="global-controls">
+        <h2>グローバル制御</h2>
+        <div class="global-actions">
+          <button class="btn btn-primary" onclick="initializeAllWindows()">
+            全ウィンドウ初期化
+          </button>
+          <button class="btn btn-secondary" onclick="minimizeAllWindows()">
+            全て最小化
+          </button>
+          <button class="btn btn-success" onclick="restoreAllWindows()">
+            全て復元
+          </button>
+          <button class="btn btn-danger" onclick="closeAllWindows()">
+            全て閉じる
+          </button>
+        </div>
+      </div>
+
+      <div class="window-controls">
+        <!-- ゴーストウィンドウ -->
+        <div class="window-card" id="ghost-window-card">
+          <div class="status-indicator" id="ghost-status">停止</div>
+          <div class="window-title">
+            <span class="window-status" id="ghost-indicator"></span>
+            ゴーストウィンドウ
+          </div>
+          <div class="window-description">
+            メインキャラクター表示ウィンドウ。透過・フローティング表示でデスクトップに常駐。
+          </div>
+          <div class="window-actions">
+            <button class="btn btn-primary" onclick="toggleGhostWindow()">
+              開く/閉じる
+            </button>
+            <button class="btn btn-secondary" onclick="configureGhostWindow()">
+              設定
+            </button>
+          </div>
+        </div>
+
+        <!-- 設定ウィンドウ -->
+        <div class="window-card" id="settings-window-card">
+          <div class="status-indicator" id="settings-status">停止</div>
+          <div class="window-title">
+            <span class="window-status" id="settings-indicator"></span>
+            設定ウィンドウ
+          </div>
+          <div class="window-description">
+            アプリケーション設定、ゴースト管理、YAYA Shiori設定など。
+          </div>
+          <div class="window-actions">
+            <button class="btn btn-primary" onclick="toggleSettingsWindow()">
+              開く/閉じる
+            </button>
+            <button class="btn btn-secondary" onclick="resetSettings()">
+              リセット
+            </button>
+          </div>
+        </div>
+
+        <!-- バルーンウィンドウ -->
+        <div class="window-card" id="balloon-window-card">
+          <div class="status-indicator" id="balloon-status">停止</div>
+          <div class="window-title">
+            <span class="window-status" id="balloon-indicator"></span>
+            バルーンウィンドウ
+          </div>
+          <div class="window-description">
+            メッセージ・台詞表示。ゴーストの近くにフローティング表示。
+          </div>
+          <div class="window-actions">
+            <button class="btn btn-primary" onclick="testBalloonWindow()">
+              テスト表示
+            </button>
+            <button class="btn btn-secondary" onclick="configureBalloon()">
+              設定
+            </button>
+          </div>
+        </div>
+
+        <!-- YAYA連携ウィンドウ -->
+        <div class="window-card" id="yaya-window-card">
+          <div class="status-indicator" id="yaya-status">停止</div>
+          <div class="window-title">
+            <span class="window-status" id="yaya-indicator"></span>
+            YAYA連携
+          </div>
+          <div class="window-description">
+            YAYA Shiori DLLとの連携、デバッグ情報表示。
+          </div>
+          <div class="window-actions">
+            <button class="btn btn-primary" onclick="connectYAYA()">
+              接続
+            </button>
+            <button class="btn btn-secondary" onclick="debugYAYA()">
+              デバッグ
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-panel">
+        <h2>ウィンドウ設定</h2>
+
+        <div class="settings-row">
+          <label for="always-on-top" class="settings-label"
+            >常に最前面表示</label
+          >
+          <div class="settings-value">
+            <input
+              type="checkbox"
+              id="always-on-top"
+              onchange="toggleAlwaysOnTop()"
+              aria-label="常に最前面表示を切り替え"
+            />
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <label for="opacity-slider" class="settings-label">透過度</label>
+          <div class="settings-value">
+            <input
+              type="range"
+              id="opacity-slider"
+              min="30"
+              max="100"
+              value="90"
+              onchange="updateOpacity()"
+              aria-label="ウィンドウの透過度を調整"
+            />
+            <span id="opacity-value">90%</span>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <label for="auto-minimize" class="settings-label">自動最小化</label>
+          <div class="settings-value">
+            <input
+              type="checkbox"
+              id="auto-minimize"
+              onchange="toggleAutoMinimize()"
+              aria-label="自動最小化を切り替え"
+            />
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <label for="system-tray" class="settings-label"
+            >システムトレイ表示</label
+          >
+          <div class="settings-value">
+            <input
+              type="checkbox"
+              id="system-tray"
+              checked
+              onchange="toggleSystemTray()"
+              aria-label="システムトレイ表示を切り替え"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ウィンドウ状態管理
+      const windowStates = {
+        ghost: false,
+        settings: false,
+        balloon: false,
+        yaya: false,
+      };
+
+      // ウィンドウ状態の更新
+      function updateWindowStatus(windowName, isActive) {
+        windowStates[windowName] = isActive;
+
+        const indicator = document.getElementById(`${windowName}-indicator`);
+        const status = document.getElementById(`${windowName}-status`);
+        const card = document.getElementById(`${windowName}-window-card`);
+
+        if (isActive) {
+          indicator.classList.add("active");
+          status.textContent = "実行中";
+          status.classList.add("active");
+          card.classList.add("active");
+        } else {
+          indicator.classList.remove("active");
+          status.textContent = "停止";
+          status.classList.remove("active");
+          card.classList.remove("active");
+        }
+      }
+
+      // ゴーストウィンドウ制御
+      function toggleGhostWindow() {
+        const newState = !windowStates.ghost;
+        updateWindowStatus("ghost", newState);
+
+        if (newState) {
+          console.log("ゴーストウィンドウを開きます...");
+          // 将来的な実装: Tauri APIでゴーストウィンドウを作成
+          // await invoke('create_ghost_window');
+        } else {
+          console.log("ゴーストウィンドウを閉じます...");
+          // 将来的な実装: Tauri APIでゴーストウィンドウを閉じる
+          // await invoke('close_ghost_window');
+        }
+      }
+
+      function configureGhostWindow() {
+        alert(
+          "ゴーストウィンドウ設定\n\n将来的な機能:\n• 透過度設定\n• フローティング位置\n• アニメーション設定\n• キャラクター選択"
+        );
+      }
+
+      // 設定ウィンドウ制御
+      function toggleSettingsWindow() {
+        const newState = !windowStates.settings;
+        updateWindowStatus("settings", newState);
+
+        if (newState) {
+          console.log("設定ウィンドウを開きます...");
+          // 将来的な実装: 設定ウィンドウの作成
+        } else {
+          console.log("設定ウィンドウを閉じます...");
+        }
+      }
+
+      function resetSettings() {
+        if (confirm("設定をリセットしますか？")) {
+          console.log("設定をリセットします...");
+          // 将来的な実装: 設定のリセット処理
+        }
+      }
+
+      // バルーンウィンドウ制御
+      function testBalloonWindow() {
+        console.log("バルーンテスト表示...");
+        updateWindowStatus("balloon", true);
+
+        // 3秒後に自動で閉じる
+        setTimeout(() => {
+          updateWindowStatus("balloon", false);
+        }, 3000);
+
+        alert(
+          "バルーンテスト表示\n\n将来的な機能:\n• ゴースト連動位置\n• 自動消去タイマー\n• 音声再生連動"
+        );
+      }
+
+      function configureBalloon() {
+        alert(
+          "バルーン設定\n\n将来的な機能:\n• 表示時間設定\n• フォント・色設定\n• 位置調整\n• エフェクト設定"
+        );
+      }
+
+      // YAYA連携制御
+      function connectYAYA() {
+        console.log("YAYA接続を試行します...");
+        updateWindowStatus("yaya", true);
+
+        // シミュレーション: 接続処理
+        setTimeout(() => {
+          const success = Math.random() > 0.3;
+          if (success) {
+            alert(
+              "YAYA接続成功！\n\n将来的な機能:\n• SHIORI DLL読み込み\n• リクエスト/レスポンス\n• エラーログ表示"
+            );
+          } else {
+            updateWindowStatus("yaya", false);
+            alert(
+              "YAYA接続失敗\n\nデバッグ情報:\n• DLLファイルが見つかりません\n• 設定を確認してください"
+            );
+          }
+        }, 1500);
+      }
+
+      function debugYAYA() {
+        alert(
+          "YAYAデバッグ\n\n将来的な機能:\n• リアルタイムログ\n• 変数状態表示\n• エラー詳細情報\n• パフォーマンス監視"
+        );
+      }
+
+      // グローバル制御
+      function initializeAllWindows() {
+        console.log("全ウィンドウを初期化します...");
+        Object.keys(windowStates).forEach((window) => {
+          updateWindowStatus(window, true);
+        });
+
+        setTimeout(() => {
+          alert("全ウィンドウの初期化が完了しました");
+        }, 1000);
+      }
+
+      function minimizeAllWindows() {
+        console.log("全ウィンドウを最小化します...");
+        // 将来的な実装: 全ウィンドウの最小化
+      }
+
+      function restoreAllWindows() {
+        console.log("全ウィンドウを復元します...");
+        // 将来的な実装: 全ウィンドウの復元
+      }
+
+      function closeAllWindows() {
+        if (confirm("全てのウィンドウを閉じますか？")) {
+          console.log("全ウィンドウを閉じます...");
+          Object.keys(windowStates).forEach((window) => {
+            updateWindowStatus(window, false);
+          });
+        }
+      }
+
+      // 設定制御
+      function toggleAlwaysOnTop() {
+        const checked = document.getElementById("always-on-top").checked;
+        console.log(`常に最前面表示: ${checked}`);
+        // 将来的な実装: Tauri APIで最前面設定
+      }
+
+      function updateOpacity() {
+        const value = document.getElementById("opacity-slider").value;
+        document.getElementById("opacity-value").textContent = `${value}%`;
+        console.log(`透過度: ${value}%`);
+        // 将来的な実装: ウィンドウ透過度の設定
+      }
+
+      function toggleAutoMinimize() {
+        const checked = document.getElementById("auto-minimize").checked;
+        console.log(`自動最小化: ${checked}`);
+        // 将来的な実装: 自動最小化の設定
+      }
+
+      function toggleSystemTray() {
+        const checked = document.getElementById("system-tray").checked;
+        console.log(`システムトレイ表示: ${checked}`);
+        // 将来的な実装: システムトレイの表示/非表示
+      }
+
+      // 初期化
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("ウィンドウ管理センターを初期化しました");
+
+        // 将来的な実装: Tauri APIとの連携
+        if (typeof window.__TAURI__ !== "undefined") {
+          console.log("Tauri環境で実行中");
+          // 現在のウィンドウ状態を取得
+          // 各ウィンドウの初期状態を設定
+        }
+      });
+    </script>
+  </body>
+</html>

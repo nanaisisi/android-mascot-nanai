@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mascot Nanai - デスクトップ機能</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", "Meiryo", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #333;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .desktop-features {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .header h1 {
+        color: #2c3e50;
+        font-size: 32px;
+        font-weight: 300;
+        margin-bottom: 15px;
+      }
+
+      .header p {
+        color: #7f8c8d;
+        font-size: 18px;
+        line-height: 1.6;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+      }
+
+      .feature-card {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        border-color: #667eea;
+        box-shadow: 0 15px 45px rgba(102, 126, 234, 0.2);
+      }
+
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        color: white;
+        font-size: 24px;
+      }
+
+      .feature-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 12px;
+      }
+
+      .feature-description {
+        color: #6c757d;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        font-size: 14px;
+      }
+
+      .feature-controls {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 25px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex: 1;
+        min-width: 80px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-success {
+        background: #28a745;
+        color: white;
+      }
+
+      .btn-warning {
+        background: #ffc107;
+        color: #212529;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .system-integration {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
+      }
+
+      .system-integration h2 {
+        color: #495057;
+        margin-bottom: 20px;
+        font-size: 24px;
+        text-align: center;
+      }
+
+      .integration-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
+
+      .integration-item {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .integration-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        color: white;
+        font-size: 20px;
+      }
+
+      .status-panel {
+        background: #f8f9fa;
+        border-radius: 16px;
+        padding: 25px;
+        border-left: 5px solid #28a745;
+      }
+
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+      }
+
+      .status-item {
+        text-align: center;
+        padding: 15px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .status-value {
+        font-size: 24px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+      }
+
+      .status-label {
+        font-size: 12px;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .advanced-settings {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        border-radius: 16px;
+        padding: 25px;
+        margin-top: 30px;
+      }
+
+      .settings-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .settings-row:last-child {
+        border-bottom: none;
+      }
+
+      .settings-label {
+        font-weight: 500;
+        color: #1976d2;
+      }
+
+      .settings-value {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      input[type="range"] {
+        width: 120px;
+      }
+
+      select {
+        padding: 6px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: white;
+      }
+
+      @media (max-width: 768px) {
+        .feature-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .integration-grid {
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .desktop-features {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="desktop-features">
+      <div class="header">
+        <h1>デスクトップ固有機能</h1>
+        <p>Windowsデスクトップ環境の特性を最大限活用した高度な機能群</p>
+      </div>
+
+      <div class="feature-grid">
+        <!-- 透過・フローティング -->
+        <div class="feature-card">
+          <div class="feature-icon">👻</div>
+          <div class="feature-title">透過・フローティング表示</div>
+          <div class="feature-description">
+            デスクトップ上に透過ウィンドウとしてキャラクターを表示。他のアプリケーションの邪魔にならない。
+          </div>
+          <div class="feature-controls">
+            <button class="btn btn-primary" onclick="toggleTransparency()">
+              透過切替
+            </button>
+            <button class="btn btn-secondary" onclick="adjustOpacity()">
+              透過度調整
+            </button>
+          </div>
+        </div>
+
+        <!-- Always On Top -->
+        <div class="feature-card">
+          <div class="feature-icon">📌</div>
+          <div class="feature-title">常に最前面表示</div>
+          <div class="feature-description">
+            すべてのアプリケーションの最前面に表示。重要な通知や常時表示したい情報に最適。
+          </div>
+          <div class="feature-controls">
+            <button class="btn btn-primary" onclick="toggleAlwaysOnTop()">
+              最前面切替
+            </button>
+            <button class="btn btn-secondary" onclick="configureTopmost()">
+              設定
+            </button>
+          </div>
+        </div>
+
+        <!-- ドラッグ移動 -->
+        <div class="feature-card">
+          <div class="feature-icon">🖱️</div>
+          <div class="feature-title">ドラッグ移動・配置</div>
+          <div class="feature-description">
+            キャラクターをドラッグしてデスクトップ上の任意の位置に配置。位置は自動保存される。
+          </div>
+          <div class="feature-controls">
+            <button class="btn btn-primary" onclick="enableDragMode()">
+              ドラッグ有効
+            </button>
+            <button class="btn btn-secondary" onclick="resetPosition()">
+              位置リセット
+            </button>
+          </div>
+        </div>
+
+        <!-- システムトレイ -->
+        <div class="feature-card">
+          <div class="feature-icon">🔔</div>
+          <div class="feature-title">システムトレイ統合</div>
+          <div class="feature-description">
+            システムトレイに常駐。右クリックメニューから各種機能にアクセス可能。
+          </div>
+          <div class="feature-controls">
+            <button class="btn btn-primary" onclick="toggleSystemTray()">
+              トレイ表示
+            </button>
+            <button class="btn btn-secondary" onclick="configureTray()">
+              メニュー設定
+            </button>
+          </div>
+        </div>
+
+        <!-- ホットキー -->
+        <div class="feature-card">
+          <div class="feature-icon">⌨️</div>
+          <div class="feature-title">グローバルホットキー</div>
+          <div class="feature-description">
+            システム全体でのキーボードショートカット。どのアプリ使用中でも機能を呼び出し可能。
+          </div>
+          <div class="feature-controls">
+            <button class="btn btn-primary" onclick="configureHotkeys()">
+              キー設定
+            </button>
+            <button class="btn btn-secondary" onclick="testHotkeys()">
+              動作テスト
+            </button>
+          </div>
+        </div>
+
+        <!-- デスクトップ連携 -->
+        <div class="feature-card">
+          <div class="feature-icon">🖥️</div>
+          <div class="feature-title">デスクトップ環境連携</div>
+          <div class="feature-description">
+            壁紙変更検出、ウィンドウフォーカス監視、マルチモニター対応など。
+          </div>
+          <div class="feature-controls">
+            <button class="btn btn-primary" onclick="enableDesktopMonitoring()">
+              監視開始
+            </button>
+            <button class="btn btn-secondary" onclick="configureMonitoring()">
+              設定
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="system-integration">
+        <h2>システム統合機能</h2>
+        <div class="integration-grid">
+          <div class="integration-item">
+            <div class="integration-icon">🗂️</div>
+            <h3>ファイル監視</h3>
+            <p>指定フォルダの変更を監視</p>
+          </div>
+          <div class="integration-item">
+            <div class="integration-icon">📊</div>
+            <h3>システム情報</h3>
+            <p>CPU、メモリ使用率表示</p>
+          </div>
+          <div class="integration-item">
+            <div class="integration-icon">🔔</div>
+            <h3>通知システム</h3>
+            <p>Windows通知との連携</p>
+          </div>
+          <div class="integration-item">
+            <div class="integration-icon">🎵</div>
+            <h3>音声制御</h3>
+            <p>システム音量・再生制御</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-panel">
+        <h2>システム状態</h2>
+        <div class="status-grid">
+          <div class="status-item">
+            <div class="status-value" id="transparency-status">OFF</div>
+            <div class="status-label">透過表示</div>
+          </div>
+          <div class="status-item">
+            <div class="status-value" id="topmost-status">OFF</div>
+            <div class="status-label">最前面表示</div>
+          </div>
+          <div class="status-item">
+            <div class="status-value" id="tray-status">OFF</div>
+            <div class="status-label">トレイ表示</div>
+          </div>
+          <div class="status-item">
+            <div class="status-value" id="hotkey-status">0</div>
+            <div class="status-label">ホットキー</div>
+          </div>
+          <div class="status-item">
+            <div class="status-value" id="monitoring-status">OFF</div>
+            <div class="status-label">環境監視</div>
+          </div>
+          <div class="status-item">
+            <div class="status-value" id="performance-status">良好</div>
+            <div class="status-label">パフォーマンス</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="advanced-settings">
+        <h2>高度な設定</h2>
+
+        <div class="settings-row">
+          <label for="startup-setting" class="settings-label"
+            >スタートアップ登録</label
+          >
+          <div class="settings-value">
+            <input
+              type="checkbox"
+              id="startup-setting"
+              onchange="toggleStartup()"
+              aria-label="Windows起動時の自動開始を切り替え"
+            />
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <label for="multi-monitor" class="settings-label"
+            >マルチモニター対応</label
+          >
+          <div class="settings-value">
+            <select
+              id="multi-monitor"
+              onchange="configureMultiMonitor()"
+              aria-label="マルチモニター設定"
+            >
+              <option value="primary">プライマリのみ</option>
+              <option value="all">全モニター</option>
+              <option value="custom">カスタム</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <label for="performance-mode" class="settings-label"
+            >パフォーマンスモード</label
+          >
+          <div class="settings-value">
+            <select
+              id="performance-mode"
+              onchange="setPerformanceMode()"
+              aria-label="パフォーマンスモード設定"
+            >
+              <option value="eco">エコ</option>
+              <option value="balanced">バランス</option>
+              <option value="performance">高性能</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <label for="update-interval" class="settings-label">更新間隔</label>
+          <div class="settings-value">
+            <input
+              type="range"
+              id="update-interval"
+              min="100"
+              max="5000"
+              value="1000"
+              onchange="updateInterval()"
+              aria-label="画面更新間隔を調整"
+            />
+            <span id="interval-value">1000ms</span>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <label for="memory-limit" class="settings-label">メモリ制限</label>
+          <div class="settings-value">
+            <input
+              type="range"
+              id="memory-limit"
+              min="50"
+              max="500"
+              value="200"
+              onchange="updateMemoryLimit()"
+              aria-label="メモリ使用量制限を調整"
+            />
+            <span id="memory-value">200MB</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 機能状態管理
+      const featureStates = {
+        transparency: false,
+        alwaysOnTop: false,
+        systemTray: false,
+        hotkeys: 0,
+        monitoring: false,
+      };
+
+      // 状態表示更新
+      function updateStatusDisplay() {
+        document.getElementById("transparency-status").textContent =
+          featureStates.transparency ? "ON" : "OFF";
+        document.getElementById("topmost-status").textContent =
+          featureStates.alwaysOnTop ? "ON" : "OFF";
+        document.getElementById("tray-status").textContent =
+          featureStates.systemTray ? "ON" : "OFF";
+        document.getElementById("hotkey-status").textContent =
+          featureStates.hotkeys.toString();
+        document.getElementById("monitoring-status").textContent =
+          featureStates.monitoring ? "ON" : "OFF";
+      }
+
+      // 透過機能
+      function toggleTransparency() {
+        featureStates.transparency = !featureStates.transparency;
+        console.log(`透過表示: ${featureStates.transparency}`);
+        updateStatusDisplay();
+
+        if (featureStates.transparency) {
+          alert(
+            "透過表示を有効にしました\n\n将来的な実装:\n• ウィンドウ透過度の制御\n• 背景の透過処理\n• 透過度のアニメーション"
+          );
+        } else {
+          alert("透過表示を無効にしました");
+        }
+      }
+
+      function adjustOpacity() {
+        const opacity = prompt("透過度を入力してください (30-100):", "90");
+        if (opacity && opacity >= 30 && opacity <= 100) {
+          console.log(`透過度を${opacity}%に設定`);
+          alert(
+            `透過度を${opacity}%に設定しました\n\n将来的な実装:\n• リアルタイム透過度変更\n• スライダーでの調整\n• プリセット保存`
+          );
+        }
+      }
+
+      // Always On Top機能
+      function toggleAlwaysOnTop() {
+        featureStates.alwaysOnTop = !featureStates.alwaysOnTop;
+        console.log(`常に最前面: ${featureStates.alwaysOnTop}`);
+        updateStatusDisplay();
+
+        alert(
+          `常に最前面表示: ${
+            featureStates.alwaysOnTop ? "有効" : "無効"
+          }\n\n将来的な実装:\n• Tauri API連携\n• 最前面状態の管理\n• 例外アプリの設定`
+        );
+      }
+
+      function configureTopmost() {
+        alert(
+          "最前面設定\n\n将来的な機能:\n• 例外アプリケーション設定\n• フルスクリーン時の動作\n• 一時的な最前面解除"
+        );
+      }
+
+      // ドラッグ移動
+      function enableDragMode() {
+        alert(
+          "ドラッグモード有効\n\n将来的な実装:\n• マウスイベントハンドリング\n• ウィンドウ位置の更新\n• 境界検証とスナップ機能"
+        );
+      }
+
+      function resetPosition() {
+        alert(
+          "位置をリセットしました\n\n将来的な実装:\n• デフォルト位置への移動\n• アニメーション付き移動\n• 位置履歴の管理"
+        );
+      }
+
+      // システムトレイ
+      function toggleSystemTray() {
+        featureStates.systemTray = !featureStates.systemTray;
+        console.log(`システムトレイ: ${featureStates.systemTray}`);
+        updateStatusDisplay();
+
+        alert(
+          `システムトレイ: ${
+            featureStates.systemTray ? "表示" : "非表示"
+          }\n\n将来的な実装:\n• トレイアイコンの作成\n• 右クリックメニュー\n• 通知バルーン`
+        );
+      }
+
+      function configureTray() {
+        alert(
+          "トレイメニュー設定\n\n将来的な機能:\n• カスタムメニュー項目\n• アイコンの変更\n• 通知設定"
+        );
+      }
+
+      // ホットキー
+      function configureHotkeys() {
+        const key = prompt(
+          "ホットキーを設定してください (例: Ctrl+Alt+M):",
+          "Ctrl+Alt+M"
+        );
+        if (key) {
+          featureStates.hotkeys++;
+          updateStatusDisplay();
+          alert(
+            `ホットキー設定: ${key}\n\n将来的な実装:\n• グローバルキー登録\n• 重複検証\n• 動作のカスタマイズ`
+          );
+        }
+      }
+
+      function testHotkeys() {
+        alert(
+          "ホットキーテスト\n\n将来的な実装:\n• 登録済みキーの一覧\n• テストモード\n• 競合チェック"
+        );
+      }
+
+      // デスクトップ監視
+      function enableDesktopMonitoring() {
+        featureStates.monitoring = !featureStates.monitoring;
+        console.log(`デスクトップ監視: ${featureStates.monitoring}`);
+        updateStatusDisplay();
+
+        alert(
+          `デスクトップ監視: ${
+            featureStates.monitoring ? "開始" : "停止"
+          }\n\n将来的な実装:\n• 壁紙変更検出\n• ウィンドウフォーカス監視\n• 解像度変更対応`
+        );
+      }
+
+      function configureMonitoring() {
+        alert(
+          "監視設定\n\n将来的な機能:\n• 監視対象の選択\n• イベントハンドラー設定\n• ログレベル調整"
+        );
+      }
+
+      // 高度な設定
+      function toggleStartup() {
+        const checked = document.getElementById("startup-setting").checked;
+        console.log(`スタートアップ登録: ${checked}`);
+        alert(
+          `スタートアップ: ${
+            checked ? "登録" : "解除"
+          }\n\n将来的な実装:\n• レジストリ操作\n• 起動遅延設定\n• 管理者権限処理`
+        );
+      }
+
+      function configureMultiMonitor() {
+        const value = document.getElementById("multi-monitor").value;
+        console.log(`マルチモニター: ${value}`);
+        alert(
+          `マルチモニター設定: ${value}\n\n将来的な実装:\n• モニター情報取得\n• ウィンドウ配置制御\n• DPI対応`
+        );
+      }
+
+      function setPerformanceMode() {
+        const mode = document.getElementById("performance-mode").value;
+        console.log(`パフォーマンスモード: ${mode}`);
+        document.getElementById("performance-status").textContent =
+          mode === "eco" ? "エコ" : mode === "balanced" ? "バランス" : "高性能";
+      }
+
+      function updateInterval() {
+        const value = document.getElementById("update-interval").value;
+        document.getElementById("interval-value").textContent = `${value}ms`;
+        console.log(`更新間隔: ${value}ms`);
+      }
+
+      function updateMemoryLimit() {
+        const value = document.getElementById("memory-limit").value;
+        document.getElementById("memory-value").textContent = `${value}MB`;
+        console.log(`メモリ制限: ${value}MB`);
+      }
+
+      // 初期化
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("デスクトップ機能管理画面を初期化しました");
+        updateStatusDisplay();
+
+        // 将来的な実装: システム機能の検証
+        if (typeof window.__TAURI__ !== "undefined") {
+          console.log("Tauri環境で実行中 - デスクトップ機能利用可能");
+          // システム機能の可用性チェック
+          // 各機能の初期状態取得
+        } else {
+          console.log("ブラウザ環境 - デスクトップ機能はシミュレーション");
+        }
+      });
+    </script>
+  </body>
+</html>

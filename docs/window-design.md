@@ -1,5 +1,6 @@
-**AI関与について**: このドキュメントはGitHub
+# ウィンドウ設計
 
+> **AI関与について**: このドキュメントはGitHub
 > Copilotの支援により作成されました。技術検討・設計はオーナーユーザーとAIの協議により行われています。
 
 ## 概要
@@ -7,12 +8,13 @@
 Android向けマスコットアプリケーションにおけるUI構成設計。 SSP（原意 Sakura
 Script Player）のコンセプトをAndroid環境に適応させる。
 
+> **注**:
+> WindowsプラットフォームはAndroid向けUIの検証用として使用し、将来的なWindows固有機能（Splashscreen等）は別途検討・分離して記載する。
+
 ## 開発段階
 
-### 開発サイクル
-
-1. **Windows 1次**: 基本動作検証（技術検証用）
-2. **Android 2次**: System Overlay での本格実装
+1. **Windows検証**: Android向けUIの動作検証（技術検証・デバッグ用）
+2. **Android本実装**: System Overlay での本格実装
 
 ## UI構成（Android向け）
 
@@ -80,13 +82,13 @@ Script Player）のコンセプトをAndroid環境に適応させる。
 - **システムオーバーレイ**: 非常に制限的、権限必要
 - **フローティング**: CSS Transformによる疑似実装
 
-## ファイル配置（Android向け）
+## ファイル配置
 
-### Single Activity 構成
+### メイン構成（Android向け、Windows検証用に同等実装）
 
 ```
 src/
-├── index.html              (Single Activity Container)
+├── index.html              (Single Activity Container / Windows検証用UI)
 ├── main.js                 (App Controller)
 ├── styles.css              (Global Styles)
 ├── views/
@@ -103,19 +105,21 @@ src/
         └── mock_nanai/
 ```
 
-### Windows検証用（将来）
+### 将来的なWindows固有構成（参考・分離検討対象）
 
 ```
-src/windows/               (Windows検証時のみ)
-|── splashscreen.html     (Splashscreenウィンドウ)
-├── ghost.html            (独立ゴーストウィンドウ)
-├── settings.html         (独立設定ウィンドウ)
-└── balloon.html          (独立バルーンウィンドウ)
+src/windows/               (Windows固有機能検証時のみ)
+├── splashscreen.html     (スプラッシュ画面)
+├── multi-window.html     (複数ウィンドウ管理)
+└── desktop-features.html (デスクトップ固有機能)
 ```
+
+> **注**: Windows固有の機能（複数ウィンドウ、透過、Always On
+> Top等）は将来的な検討事項として分離。現在はAndroid向けUIの検証に集中。
 
 ## Tauri設定
 
-### Android向け設定
+### メイン設定（Android向け、Windows検証用に同等）
 
 ```json
 {
@@ -145,87 +149,59 @@ src/windows/               (Windows検証時のみ)
 }
 ```
 
-### Windows検証用設定（将来）
+### 将来的なWindows固有設定（分離検討対象）
 
 ```json
 {
   "app": {
     "windows": [
       {
-        "label": "ghost",
-        "url": "windows/ghost.html",
+        "label": "splashscreen",
+        "url": "windows/splashscreen.html",
         "transparent": true,
         "decorations": false,
         "alwaysOnTop": true
-      },
-      {
-        "label": "settings",
-        "url": "windows/settings.html",
-        "visible": false
       }
     ]
   }
 }
 ```
 
+> **注**: Windows固有の設定は将来的な検討事項。現在はAndroid向けUIの検証に集中。
+
 ## 実装順序
 
-### Phase 1: Windows多機能実装
+### Phase 1: Android向けUI基本実装（Windows検証用でも同等実装）
 
-- **目標**: PC環境での完全機能実装・検証
+- **目標**: WebView内でのキャラクター表示（Android本番・Windows検証両用）
 - **内容**:
-  - 独立した複数ウィンドウ（ゴースト、設定、バルーン）
-  - デスクトップ透過・フローティング表示
-  - YAYA Shioriとの完全連携
-  - 豊富なユーザーインタラクション
-  - システムトレイ・ホットキー対応
+  - Single Activity Container構築
+  - ゴーストビューの基本表示
+  - タッチインタラクション
 
-### Phase 2: Windows機能拡張・安定化
+### Phase 2: Android向けUI拡張（Windows検証用でも同等実装）
 
-- **目標**: 高度機能の実装と動作安定性確保
+- **目標**: 設定画面・メッセージ機能（Android本番・Windows検証両用）
 - **内容**:
-  - 複雑なアニメーション・エフェクト
-  - 高度な設定・カスタマイズ機能
-  - プラグインシステム
-  - パフォーマンス最適化
+  - 設定ビューの実装
+  - バルーンビューの実装
+  - ビュー切り替え機能
 
-### Phase 3: Android基盤移植
+### Phase 3: Android高度機能
 
-- **目標**: Windows版機能のAndroid環境への適応
+- **目標**: システムオーバーレイ・サービス化（Android専用）
 - **内容**:
-  - Single Activity Container化
-  - タッチインターフェース対応
-  - Android制約への適応
+  - SYSTEM_ALERT_WINDOW権限対応
+  - フォアグラウンドサービス実装
+  - より高度なインタラクション
 
-### Phase 4: Android高度機能
+### 将来的検討事項: Windows固有機能
 
-- **目標**: Android固有機能の活用
+- **目標**: デスクトップ固有機能の検証（分離検討対象）
 - **内容**:
-  - System Overlay対応
-  - フォアグラウンドサービス
-  - Android固有のインタラクション
+  - 複数ウィンドウ版の作成
+  - 透過・フローティング検証
+  - Splashscreen等の実装
 
-## 開発方針の転換
-
-### 現状の反省点
-
-1. **過度なAndroid特化**:
-   最初からAndroid制約に合わせて実装したため、PC環境の利点を活用できていない
-2. **機能制限**: Single Activity
-   Containerに縛られ、複数ウィンドウによる豊富な表現を失った
-3. **YAYA連携不足**:
-   独自の簡易的な会話機能を実装し、本来のSHIORIエコシステムとの乖離が生じた
-
-### 新方針: Windows First Development
-
-1. **複数ウィンドウ活用**: 各機能を独立したウィンドウとして実装
-2. **デスクトップ環境最適化**: 透過、Always On Top、フローティング等の活用
-3. **YAYA完全連携**: Shiori DLLとの直接連携による本格的な対話システム
-4. **段階的移植**: 完成したWindows版をベースにAndroid版を開発
-
-### 今後の作業
-
-1. **index.htmlの最小化**: 現在の複雑な実装を基本的な構造のみに簡素化
-2. **独立ウィンドウ設計**: 各機能を独立したHTMLファイルとして分離
-3. **YAYA連携基盤**: Tauri経由でのShiori DLL呼び出し実装
-4. **Windows向け最適化**: デスクトップ環境の利点を最大化
+> **注**:
+> Windows固有機能は現在の開発スコープ外。Android向けUIの検証完了後に別途検討。

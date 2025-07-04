@@ -1,0 +1,172 @@
+{
+  "build": {
+    "beforeDevCommand": "",
+    "beforeBuildCommand": "",
+    "devPath": "../src",
+    "distDir": "../src",
+    "withGlobalTauri": true
+  },
+  "package": {
+    "productName": "Mascot Nanai Desktop",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "window": {
+        "all": false,
+        "create": true,
+        "center": true,
+        "requestUserAttention": true,
+        "setResizable": true,
+        "setTitle": true,
+        "maximize": true,
+        "minimize": true,
+        "show": true,
+        "hide": true,
+        "close": true,
+        "setDecorations": true,
+        "setAlwaysOnTop": true,
+        "setSize": true,
+        "setMinSize": true,
+        "setMaxSize": true,
+        "setPosition": true,
+        "setFullscreen": true,
+        "setFocus": true,
+        "setIcon": true,
+        "setSkipTaskbar": true,
+        "setCursorGrab": true,
+        "setCursorVisible": true,
+        "setCursorIcon": true,
+        "setCursorPosition": true,
+        "setIgnoreCursorEvents": true,
+        "startDragging": true,
+        "print": true
+      },
+      "globalShortcut": {
+        "all": true
+      },
+      "systemTray": {
+        "all": true
+      },
+      "notification": {
+        "all": true
+      },
+      "fs": {
+        "all": false,
+        "readFile": true,
+        "writeFile": true,
+        "readDir": true,
+        "createDir": true,
+        "removeDir": true,
+        "removeFile": true,
+        "renameFile": true,
+        "exists": true
+      },
+      "path": {
+        "all": true
+      },
+      "os": {
+        "all": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.mascotnanai.desktop",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": false,
+        "title": "Mascot Nanai - スプラッシュ",
+        "width": 400,
+        "height": 300,
+        "center": true,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": true,
+        "url": "windows/splashscreen.html",
+        "label": "splashscreen"
+      },
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "title": "Mascot Nanai - ウィンドウ管理",
+        "width": 900,
+        "height": 700,
+        "minWidth": 600,
+        "minHeight": 500,
+        "center": true,
+        "decorations": true,
+        "transparent": false,
+        "alwaysOnTop": false,
+        "skipTaskbar": false,
+        "visible": false,
+        "url": "windows/multi-window.html",
+        "label": "window-manager"
+      },
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "title": "Mascot Nanai - デスクトップ機能",
+        "width": 1000,
+        "height": 800,
+        "minWidth": 700,
+        "minHeight": 600,
+        "center": true,
+        "decorations": true,
+        "transparent": false,
+        "alwaysOnTop": false,
+        "skipTaskbar": false,
+        "visible": false,
+        "url": "windows/desktop-features.html",
+        "label": "desktop-features"
+      },
+      {
+        "fullscreen": false,
+        "resizable": false,
+        "title": "ナナイ",
+        "width": 200,
+        "height": 300,
+        "center": false,
+        "x": 100,
+        "y": 100,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "url": "windows/ghost-floating.html",
+        "label": "ghost-floating"
+      }
+    ],
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true,
+      "menuOnLeftClick": false,
+      "tooltip": "Mascot Nanai Desktop"
+    }
+  }
+}
