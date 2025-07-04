@@ -94,6 +94,36 @@ class MascotNanaiApp {
         this.onGhostTouch();
       });
     }
+
+    // SHIORIテストボタン
+    const scanGhostsBtn = document.getElementById('scan-ghosts');
+    if (scanGhostsBtn) {
+      scanGhostsBtn.addEventListener('click', () => {
+        this.scanGhosts();
+      });
+    }
+
+    const testShioriBtn = document.getElementById('test-shiori');
+    if (testShioriBtn) {
+      testShioriBtn.addEventListener('click', () => {
+        this.testShiori();
+      });
+    }
+
+    const loadTestGhostBtn = document.getElementById('load-test-ghost');
+    if (loadTestGhostBtn) {
+      loadTestGhostBtn.addEventListener('click', () => {
+        this.loadTestGhost();
+      });
+    }
+
+    // デバッグ用テストボタンがあれば接続
+    const debugTestBtn = document.getElementById('debug-test');
+    if (debugTestBtn) {
+      debugTestBtn.addEventListener('click', () => {
+        this.debugTest();
+      });
+    }
   }
 
   showView(viewName) {
@@ -155,6 +185,168 @@ class MascotNanaiApp {
       statusElement.textContent = message;
     }
     console.log(`📊 Status: ${message}`);
+  }
+
+  // SHIORI関連のテスト機能
+  async scanGhosts() {
+    console.log('🔍 ゴーストディレクトリをスキャン中...');
+    this.updateStatus('ゴーストスキャン中...');
+    
+    try {
+      // 相対パスでプロジェクト内のassetsディレクトリを指定
+      const testPath = "./assets/ghost";
+      console.log(`📂 スキャン対象: ${testPath}`);
+      
+      const result = await globalThis.__TAURI__.core.invoke('scan_ghost_directory', { 
+        ghostDir: testPath 
+      });
+      
+      console.log('✅ ゴーストスキャン結果:', result);
+      this.displayGhostList(result);
+      this.updateStatus(`ゴーストスキャン完了: ${result.length}個のゴーストを発見`);
+      
+    } catch (error) {
+      console.error('❌ ゴーストスキャンエラー:', error);
+      this.updateStatus(`ゴーストスキャンエラー: ${error}`);
+      
+      // エラーの詳細情報を表示
+      this.displayGhostList([]);
+      const errorDiv = document.getElementById('ghost-list');
+      if (errorDiv) {
+        errorDiv.innerHTML = `<div class="error-info">
+          <h4>エラー詳細:</h4>
+          <pre>${error}</pre>
+          <p>Tauriコマンドが正常に呼び出されていない可能性があります。</p>
+        </div>`;
+      }
+    }
+  }
+
+  async testShiori() {
+    console.log('🧪 SHIORI統合テスト開始...');
+    this.updateStatus('SHIORI統合テスト中...');
+    
+    try {
+      // テスト用リクエスト
+      const testRequest = "GET Version SHIORI/3.0\r\n\r\n";
+      console.log(`📨 送信リクエスト: ${testRequest}`);
+      
+      const result = await globalThis.__TAURI__.core.invoke('send_shiori_request', { 
+        request: testRequest 
+      });
+      
+      console.log('✅ SHIORIレスポンス:', result);
+      this.displayShioriResponse(result);
+      this.updateStatus('SHIORI統合テスト完了');
+      
+    } catch (error) {
+      console.error('❌ SHIORI統合テストエラー:', error);
+      this.updateStatus(`SHIORI統合テストエラー: ${error}`);
+      
+      // エラーの詳細情報を表示
+      const responseDiv = document.getElementById('shiori-response');
+      if (responseDiv) {
+        responseDiv.innerHTML = `<div class="error-info">
+          <h4>SHIORI通信エラー:</h4>
+          <pre>${error}</pre>
+          <p>SHIORIエンジンが読み込まれていない可能性があります。先にゴーストを読み込んでください。</p>
+        </div>`;
+      }
+    }
+  }
+
+  async loadTestGhost() {
+    console.log('👻 テストゴースト読み込み開始...');
+    this.updateStatus('テストゴースト読み込み中...');
+    
+    try {
+      // テスト用のゴースト名（実際に存在するmock_nanai）
+      const testGhostName = "mock_nanai";
+      console.log(`👻 読み込み対象: ${testGhostName}`);
+      
+      const result = await globalThis.__TAURI__.core.invoke('load_ghost', { 
+        ghostName: testGhostName 
+      });
+      
+      console.log('✅ テストゴースト読み込み結果:', result);
+      this.updateStatus('テストゴースト読み込み完了');
+      
+      // 読み込み成功時のフィードバック
+      const responseDiv = document.getElementById('shiori-response');
+      if (responseDiv) {
+        responseDiv.innerHTML = `<div class="success-info">
+          <h4>ゴースト読み込み成功:</h4>
+          <pre>${result}</pre>
+          <p>これでSHIORIテストが可能になりました。</p>
+        </div>`;
+      }
+      
+    } catch (error) {
+      console.error('❌ テストゴースト読み込みエラー:', error);
+      this.updateStatus(`テストゴースト読み込みエラー: ${error}`);
+      
+      // エラーの詳細情報を表示
+      const responseDiv = document.getElementById('shiori-response');
+      if (responseDiv) {
+        responseDiv.innerHTML = `<div class="error-info">
+          <h4>ゴースト読み込みエラー:</h4>
+          <pre>${error}</pre>
+          <p>指定されたゴーストが見つからないか、SHIORIファイルに問題がある可能性があります。</p>
+        </div>`;
+      }
+    }
+  }
+
+  async debugTest() {
+    console.log('🔧 デバッグテスト開始...');
+    this.updateStatus('Tauriコマンドテスト中...');
+    
+    try {
+      const result = await globalThis.__TAURI__.core.invoke('test_command');
+      console.log('✅ デバッグテスト成功:', result);
+      this.updateStatus(`デバッグテスト成功: ${result}`);
+      
+      const responseDiv = document.getElementById('shiori-response');
+      if (responseDiv) {
+        responseDiv.innerHTML = `<div class="success-info">
+          <h4>Tauriコマンドテスト成功:</h4>
+          <pre>${result}</pre>
+          <p>Tauri統合が正常に動作しています。</p>
+        </div>`;
+      }
+      
+    } catch (error) {
+      console.error('❌ デバッグテストエラー:', error);
+      this.updateStatus(`デバッグテストエラー: ${error}`);
+      
+      const responseDiv = document.getElementById('shiori-response');
+      if (responseDiv) {
+        responseDiv.innerHTML = `<div class="error-info">
+          <h4>Tauriコマンドテストエラー:</h4>
+          <pre>${error}</pre>
+          <p>Tauri統合に問題があります。</p>
+        </div>`;
+      }
+    }
+  }
+
+  displayGhostList(ghosts) {
+    const ghostListDiv = document.getElementById('ghost-list');
+    if (!ghostListDiv) return;
+    
+    if (ghosts && ghosts.length > 0) {
+      ghostListDiv.innerHTML = '<h4>発見されたゴースト:</h4>' +
+        ghosts.map(ghost => `<div class="ghost-item">${ghost.name} (${ghost.shiori_type})</div>`).join('');
+    } else {
+      ghostListDiv.innerHTML = '<p>ゴーストが見つかりませんでした。</p>';
+    }
+  }
+
+  displayShioriResponse(response) {
+    const responseDiv = document.getElementById('shiori-response');
+    if (!responseDiv) return;
+    
+    responseDiv.innerHTML = `<h4>SHIORIレスポンス:</h4><pre>${response}</pre>`;
   }
 
   // 外部API（Android実装用）
