@@ -16,7 +16,7 @@
       content="black-translucent"
     />
 
-    <!-- Android向けUI検証用スタイル -->
+    <!-- 透過マスコットアプリスタイル -->
     <link rel="stylesheet" href="styles.css" />
 
     <!-- メインコントローラ -->
@@ -24,87 +24,301 @@
   </head>
 
   <body>
-    <!-- Android向けUI検証用シングルコンテナ -->
-    <div id="app-container">
-      <h1>Mascot Nanai - Android UI検証</h1>
-      <p>Android向けUIの検証・開発を行います。</p>
-
-      <!-- ゴーストビュー -->
-      <div id="ghost-view" class="view">
-        <div id="ghost-character">
-          <img
-            src="assets/tauri.svg"
-            alt="ナナイ"
-            class="character-sprite"
-            width="100"
-            height="100"
-          />
+    <!-- 透過背景マスコットアプリ -->
+    <div class="container">
+      <!-- 右上メニューボタンのみ -->
+      <div class="top-right-menu">
+        <button class="menu-btn" id="menu-btn" title="メニュー">☰</button>
+        <div class="menu-dropdown" id="menu-dropdown">
+          <button class="menu-item" id="ghost-btn">👻 ゴースト管理</button>
+          <button class="menu-item" id="balloon-btn">💭 バルーン管理</button>
+          <button class="menu-item" id="scan-btn">🔍 スキャン</button>
+          <button class="menu-item" id="test-btn">🧪 テスト</button>
+          <button class="menu-item" id="settings-btn">⚙️ 設定</button>
+          <button class="menu-item" id="debug-btn">🐛 デバッグ</button>
+          <button class="menu-item" id="help-btn">❓ ヘルプ</button>
         </div>
       </div>
 
-      <!-- バルーンビュー -->
-      <div id="balloon-view" class="view hidden">
-        <div class="balloon">
-          <p id="balloon-text">こんにちは！</p>
+      <!-- メイン表示エリア（ゴースト・バルーン表示） -->
+      <div class="main-display">
+        <!-- ゴーストキャラクター表示 -->
+        <div class="ghost-display" id="ghost-display">
+          <div class="ghost-character" id="ghost-character">
+            <span class="character-placeholder"></span>
+          </div>
+        </div>
+
+        <!-- バルーン表示 -->
+        <div class="balloon-display" id="balloon-display" style="display: none">
+          <div class="balloon">
+            <div class="balloon-text" id="balloon-text">
+              こんにちは！マスコットナナイです。
+            </div>
+          </div>
+        </div>
+
+        <!-- ステータス表示 -->
+        <div class="status-bar" id="status-bar">
+          <span class="status-indicator" id="connection-status"></span>
+          <span id="status-text">準備中</span>
         </div>
       </div>
+    </div>
 
-      <!-- 設定ビュー -->
-      <div id="settings-view" class="view hidden">
-        <h2>設定</h2>
-        <div class="setting-item">
-          <label for="ghost-visible">ゴースト表示</label>
+    <!-- モーダルオーバーレイ -->
+    <div class="modal-overlay" id="modal-overlay" style="display: none">
+      <div class="modal">
+        <button class="close-btn" id="modal-close">&times;</button>
+        <div id="modal-content">
+          <!-- モーダル内容がここに表示される -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 隠されたモーダル内容テンプレート -->
+    <div id="ghost-modal-content" style="display: none">
+      <h2>👻 ゴースト管理</h2>
+      <div class="form-section">
+        <label>現在のゴースト:</label>
+        <div class="current-ghost" id="current-ghost">未選択</div>
+      </div>
+      <div class="form-section">
+        <label>利用可能なゴースト:</label>
+        <div class="ghost-list" id="ghost-list">
+          <div class="loading">ゴーストを読み込み中...</div>
+        </div>
+      </div>
+      <div class="form-section">
+        <label>ゴーストディレクトリ:</label>
+        <input type="text" id="ghost-directory" value="assets/ghost" />
+        <button id="refresh-ghosts-btn">更新</button>
+      </div>
+    </div>
+
+    <div id="balloon-modal-content" style="display: none">
+      <h2>💭 バルーン管理</h2>
+      <div class="form-section">
+        <label>現在のバルーン:</label>
+        <div class="current-balloon" id="current-balloon">デフォルト</div>
+      </div>
+      <div class="form-section">
+        <label>利用可能なバルーン:</label>
+        <div class="balloon-list" id="balloon-list">
+          <div class="balloon-item active" data-balloon="default">
+            <span>デフォルト</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <label>バルーンディレクトリ:</label>
+        <input type="text" id="balloon-directory" value="assets/balloon" />
+        <button id="refresh-balloons-btn">更新</button>
+      </div>
+    </div>
+
+    <div id="scan-modal-content" style="display: none">
+      <h2>🔍 スキャンと検出</h2>
+      <div class="form-section">
+        <label>スキャン対象:</label>
+        <input type="text" id="scan-path" value="assets/" />
+        <button id="start-scan-btn">スキャン開始</button>
+      </div>
+      <div class="form-section">
+        <label>スキャン結果:</label>
+        <div class="scan-results" id="scan-results">
+          <div class="info">
+            スキャンボタンを押してファイルを検出してください。
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <label>デバッグ情報:</label>
+        <div class="debug-info" id="scan-debug-info">
+          <div class="info">スキャン時のデバッグ情報がここに表示されます。</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="test-modal-content" style="display: none">
+      <h2>🧪 テスト機能</h2>
+      <div class="form-section">
+        <label>SHIORI テスト:</label>
+        <div class="test-controls">
+          <button id="test-shiori-init">SHIORI初期化</button>
+          <button id="test-shiori-request">リクエスト送信</button>
+          <button id="test-shiori-finalize">SHIORI終了</button>
+        </div>
+      </div>
+      <div class="form-section">
+        <label>テストメッセージ:</label>
+        <input
+          type="text"
+          id="test-message"
+          value="hello"
+          placeholder="テストメッセージ"
+        />
+        <button id="send-test-message">メッセージ送信</button>
+      </div>
+      <div class="form-section">
+        <label>パステスト:</label>
+        <div class="path-test-controls">
           <input
-            type="checkbox"
-            id="ghost-visible"
-            checked
-            aria-label="ゴースト表示の切り替え"
+            type="text"
+            id="path-test-input"
+            value="../assets/ghost"
+            placeholder="テストパス"
           />
+          <button id="test-path-resolve">パス解決テスト</button>
         </div>
-        <button id="back-to-ghost">戻る</button>
+      </div>
+      <div class="form-section">
+        <label>テスト結果:</label>
+        <div class="test-results" id="test-results">
+          <div class="info">テストボタンを押して結果を確認してください。</div>
+        </div>
+      </div>
+    </div>
 
-        <!-- SHIORI統合テスト -->
-        <div class="shiori-test-section">
-          <h3>SHIORI統合テスト</h3>
-          <div class="test-buttons">
-            <button id="debug-test">デバッグテスト</button>
-            <button id="scan-ghosts">ゴーストスキャン</button>
-            <button id="test-shiori">SHIORI テスト</button>
-            <button id="load-test-ghost">テストゴースト読み込み</button>
+    <div id="settings-modal-content" style="display: none">
+      <h2>⚙️ 設定</h2>
+      <div class="form-section">
+        <label>
+          <input type="checkbox" id="auto-load-ghost" checked />
+          自動ゴースト読み込み
+        </label>
+      </div>
+      <div class="form-section">
+        <label>
+          <input type="checkbox" id="enable-notifications" checked />
+          通知を有効化
+        </label>
+      </div>
+      <div class="form-section">
+        <label>
+          <input type="checkbox" id="dark-mode" />
+          ダークモード
+        </label>
+      </div>
+      <div class="form-section">
+        <label>
+          <input type="checkbox" id="always-on-top" checked />
+          常に最前面に表示
+        </label>
+      </div>
+      <div class="form-section">
+        <label>ゴースト表示サイズ:</label>
+        <select id="ghost-size">
+          <option value="small">小</option>
+          <option value="medium" selected>中</option>
+          <option value="large">大</option>
+        </select>
+      </div>
+      <div class="form-section">
+        <label>デバッグレベル:</label>
+        <select id="debug-level">
+          <option value="error">エラーのみ</option>
+          <option value="warn">警告以上</option>
+          <option value="info" selected>情報以上</option>
+          <option value="debug">デバッグ全て</option>
+        </select>
+      </div>
+      <div class="form-section">
+        <button id="save-settings-btn" class="primary">設定保存</button>
+        <button id="reset-settings-btn">設定リセット</button>
+      </div>
+    </div>
+
+    <div id="debug-modal-content" style="display: none">
+      <h2>🐛 デバッグ情報</h2>
+      <div class="form-section">
+        <label>システム情報:</label>
+        <div class="debug-info" id="system-info">
+          <div class="info-item">OS: <span id="os-info">取得中...</span></div>
+          <div class="info-item">
+            アプリバージョン: <span id="app-version">v1.0.0</span>
           </div>
-          <div
-            id="ghost-list"
-            class="ghost-list"
-            title="ダブルクリックで全選択"
-          ></div>
-          <div
-            id="shiori-response"
-            class="response-area"
-            title="ダブルクリックまたは長押しで全選択"
-          ></div>
-          <div
-            style="
-              font-size: 12px;
-              color: #666;
-              margin-top: 10px;
-              text-align: center;
-            "
-          >
-            💡 ヒント:
-            レスポンスエリアをダブルクリック/長押しで全選択、Ctrl+C（またはコピー）でクリップボードにコピーできます
+          <div class="info-item">
+            Tauri バージョン: <span id="tauri-version">取得中...</span>
           </div>
         </div>
       </div>
-
-      <!-- UI制御ボタン -->
-      <div id="ui-controls">
-        <button id="show-ghost">ゴースト</button>
-        <button id="show-balloon">バルーン</button>
-        <button id="show-settings">設定</button>
+      <div class="form-section">
+        <label>ログレベル:</label>
+        <select id="log-level">
+          <option value="trace">詳細</option>
+          <option value="debug" selected>デバッグ</option>
+          <option value="info">情報</option>
+          <option value="warn">警告</option>
+          <option value="error">エラー</option>
+        </select>
+        <button id="apply-log-level">適用</button>
       </div>
+      <div class="form-section">
+        <label>ログ出力:</label>
+        <div class="log-output" id="log-output">
+          <div class="log-entry info">デバッグログがここに表示されます。</div>
+        </div>
+        <div class="log-controls">
+          <button id="clear-logs">ログクリア</button>
+          <button id="export-logs">ログエクスポート</button>
+        </div>
+      </div>
+    </div>
 
-      <div id="status">
-        <p>Status: <span id="app-status">Initializing...</span></p>
+    <div id="help-modal-content" style="display: none">
+      <h2>❓ ヘルプ</h2>
+      <div class="help-section">
+        <h3>使い方</h3>
+        <p>
+          Mascot
+          Nanaiは、デスクトップマスコット(ゴースト)を表示するアプリケーションです。
+        </p>
+        <ul>
+          <li>
+            <strong>ゴースト:</strong>
+            右上メニューからゴーストを選択・管理できます
+          </li>
+          <li><strong>バルーン:</strong> 吹き出しスタイルを変更できます</li>
+          <li><strong>表示:</strong> キャラクターをクリックして操作できます</li>
+          <li><strong>設定:</strong> 右上メニューで各種設定を変更できます</li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h3>キーボードショートカット</h3>
+        <ul>
+          <li><kbd>Esc</kbd>: モーダルを閉じる</li>
+          <li><kbd>Ctrl+R</kbd>: ゴースト更新</li>
+          <li><kbd>右クリック</kbd>: メニュー表示</li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h3>トラブルシューティング</h3>
+        <ul>
+          <li>
+            <strong>ゴーストが読み込めない:</strong>
+            ゴーストディレクトリのパスを確認してください
+          </li>
+          <li>
+            <strong>表示が見えない:</strong>
+            設定で「常に最前面に表示」を有効にしてください
+          </li>
+          <li>
+            <strong>ファイルが見つからない:</strong>
+            スキャン機能で利用可能なファイルを確認してください
+          </li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h3>ライセンス情報</h3>
+        <p>
+          このソフトウェアは Apache-2.0 と MIT
+          のデュアルライセンスの下で提供されています。
+        </p>
+        <p>
+          詳細は <code>LICENSE-APACHE</code> と
+          <code>LICENSE-MIT</code> ファイルをご覧ください。
+        </p>
       </div>
     </div>
   </body>

@@ -1,0 +1,9 @@
+charset,UTF-8
+type,ghost
+name,Test Ghost for Nanai
+craftman,Test Developer
+craftmanw,テスト開発者
+sakura.name,テストキャラクター
+kero.name,サブキャラクター
+
+shiori,yaya.dll

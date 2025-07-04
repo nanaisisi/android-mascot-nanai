@@ -58,6 +58,8 @@ impl ShioriManager {
 
     /// ゴーストディレクトリをスキャンしてSHIORIを検出
     pub fn scan_ghost_directory(&self, ghost_dir: &Path) -> Result<(), String> {
+        println!("🔍 Scanning ghost directory: {:?}", ghost_dir);
+
         if !ghost_dir.exists() {
             return Err(format!("Ghost directory not found: {:?}", ghost_dir));
         }
@@ -65,19 +67,39 @@ impl ShioriManager {
         let mut found_ghosts = HashMap::new();
 
         // ゴーストディレクトリ内を再帰的に検索
-        for entry in WalkDir::new(ghost_dir).max_depth(3) {
+        for entry in WalkDir::new(ghost_dir).max_depth(4) {
             let entry = entry.map_err(|e| format!("Directory walk error: {}", e))?;
             let path = entry.path();
 
             // descript.txtファイルを探す
             if path.file_name() == Some("descript.txt".as_ref()) {
-                if let Some(ghost_path) = path.parent() {
-                    if let Ok(ghost_info) = self.analyze_ghost_directory(ghost_path) {
-                        found_ghosts.insert(ghost_info.name.clone(), ghost_info);
+                println!("📄 Found descript.txt at: {:?}", path);
+
+                // ゴーストのルートディレクトリを特定
+                if let Some(ghost_root) = self.find_ghost_root_from_descript(path) {
+                    println!("👻 Analyzing ghost root directory: {:?}", ghost_root);
+                    match self.analyze_ghost_directory(&ghost_root) {
+                        Ok(ghost_info) => {
+                            println!("✅ Successfully analyzed ghost: {}", ghost_info.name);
+                            found_ghosts.insert(ghost_info.name.clone(), ghost_info);
+                        }
+                        Err(e) => {
+                            println!(
+                                "❌ Failed to analyze ghost directory {:?}: {}",
+                                ghost_root, e
+                            );
+                        }
                     }
+                } else {
+                    println!(
+                        "❌ Could not determine ghost root for descript.txt at: {:?}",
+                        path
+                    );
                 }
             }
         }
+
+        println!("📊 Total ghosts found: {}", found_ghosts.len());
 
         // 結果を更新
         let mut ghosts = self.ghosts.write();
@@ -86,23 +108,76 @@ impl ShioriManager {
         Ok(())
     }
 
+    /// descript.txtのパスからゴーストのルートディレクトリを特定
+    fn find_ghost_root_from_descript(&self, descript_path: &Path) -> Option<PathBuf> {
+        let mut current = descript_path.parent()?; // ghost/master/ or similar
+
+        // masterディレクトリの場合、さらに上のghostディレクトリに移動
+        if current.file_name()?.to_string_lossy() == "master" {
+            current = current.parent()?; // ghost/
+        }
+
+        // ghostディレクトリの場合、さらに上のゴーストルートディレクトリに移動
+        if current.file_name()?.to_string_lossy() == "ghost" {
+            current = current.parent()?; // ghost_name/
+        }
+
+        Some(current.to_path_buf())
+    }
+
     /// 個別のゴーストディレクトリを解析
     fn analyze_ghost_directory(&self, ghost_path: &Path) -> Result<GhostInfo, String> {
-        let descript_path = ghost_path.join("descript.txt");
+        println!("🔍 Analyzing ghost directory: {:?}", ghost_path);
+
         let ghost_name = ghost_path
             .file_name()
             .unwrap_or_default()
             .to_string_lossy()
             .to_string();
 
-        // descript.txtを読み込み
-        let descript_content = fs::read_to_string(&descript_path)
+        // descript.txtの場所を探す（ghost/master/ または直接）
+        let descript_candidates = [
+            ghost_path.join("ghost").join("master").join("descript.txt"),
+            ghost_path.join("descript.txt"),
+        ];
+
+        let mut descript_path = None;
+        for candidate in &descript_candidates {
+            if candidate.exists() {
+                descript_path = Some(candidate);
+                break;
+            }
+        }
+
+        let descript_path = descript_path.ok_or_else(|| {
+            format!(
+                "descript.txt not found in ghost directory: {:?}",
+                ghost_path
+            )
+        })?;
+
+        println!("📝 Reading descript.txt from: {:?}", descript_path);
+
+        // descript.txtを読み込み（Shift_JISエンコーディング対応）
+        let descript_content = self
+            .read_shift_jis_file(&descript_path)
             .map_err(|e| format!("Failed to read descript.txt: {}", e))?;
+
+        println!(
+            "📄 Descript content length: {} chars",
+            descript_content.len()
+        );
 
         let (description, craftman, version) = self.parse_descript(&descript_content);
 
-        // SHIORIファイルを検索
-        let (shiori_type, shiori_dll) = self.detect_shiori_type(ghost_path)?;
+        // SHIORIファイルを検索（ghost/master/ ディレクトリから）
+        let shiori_search_dir = descript_path.parent().unwrap_or(ghost_path);
+        let (shiori_type, shiori_dll) = self.detect_shiori_type(shiori_search_dir)?;
+
+        println!(
+            "✅ Ghost analyzed - Name: {}, Type: {:?}",
+            ghost_name, shiori_type
+        );
 
         Ok(GhostInfo {
             name: ghost_name,
@@ -115,11 +190,22 @@ impl ShioriManager {
         })
     }
 
+    /// Shift_JISファイルを読み込み
+    fn read_shift_jis_file(&self, path: &Path) -> Result<String, std::io::Error> {
+        use encoding_rs::SHIFT_JIS;
+
+        let bytes = fs::read(path)?;
+        let (decoded, _, _) = SHIFT_JIS.decode(&bytes);
+        Ok(decoded.into_owned())
+    }
+
     /// SHIORIの種類とDLLパスを検出
     fn detect_shiori_type(
         &self,
         ghost_path: &Path,
     ) -> Result<(ShioriType, Option<PathBuf>), String> {
+        println!("🔍 Detecting SHIORI type in: {:?}", ghost_path);
+
         // DLLファイルを検索
         for entry in WalkDir::new(ghost_path).max_depth(2) {
             let entry = entry.map_err(|e| format!("SHIORI detection error: {}", e))?;
@@ -127,6 +213,8 @@ impl ShioriManager {
 
             if let Some(extension) = path.extension() {
                 if extension == "dll" {
+                    println!("🔍 Found DLL: {:?}", path);
+
                     let file_name = path
                         .file_name()
                         .unwrap_or_default()
@@ -135,18 +223,22 @@ impl ShioriManager {
 
                     // YAYA系のDLL
                     if file_name.contains("yaya") || file_name.contains("aya") {
+                        println!("✅ Detected YAYA SHIORI: {}", file_name);
                         return Ok((ShioriType::YAYA, Some(path.to_path_buf())));
                     }
 
                     // SATORIYA系のDLL
                     if file_name.contains("satori") {
+                        println!("✅ Detected SATORIYA SHIORI: {}", file_name);
                         return Ok((ShioriType::SATORIYA, Some(path.to_path_buf())));
                     }
 
                     // 汎用的なSHIORIファイル名
                     if file_name == "shiori.dll" {
+                        println!("🔍 Found generic shiori.dll, guessing type from directory...");
                         // DLLの内容やディレクトリ構造から推測
                         let shiori_type = self.guess_shiori_type_from_directory(ghost_path);
+                        println!("✅ Guessed SHIORI type: {:?}", shiori_type);
                         return Ok((shiori_type, Some(path.to_path_buf())));
                     }
                 }

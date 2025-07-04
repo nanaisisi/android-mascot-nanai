@@ -1,21 +1,31 @@
 /**
- * Mascot Nanai - Android UI検証用メインコントローラ
- * Android向けUIの検証・開発
+ * Mascot Nanai - 透過マスコットアプリ版
+ * ゴースト読み込み機能を含む完全実装
  */
 
 class MascotNanaiApp {
   constructor() {
-    this.currentView = 'ghost';
     this.isInitialized = false;
+    this.ghosts = [];
+    this.currentGhost = null;
+    this.currentBalloon = 'default';
+    this.settings = {
+      autoLoadGhost: true,
+      enableNotifications: true,
+      darkMode: false,
+      alwaysOnTop: true,
+      ghostSize: 'medium',
+      debugLevel: 'info'
+    };
     
     this.init();
   }
 
   async init() {
-    console.log('🎭 Mascot Nanai Android UI検証開始...');
+    console.log('👻 Mascot Nanai 透過マスコット版開始...');
     
     try {
-      this.updateStatus('Android向けUI初期化中...');
+      this.updateStatus('UI初期化中...', false);
       
       // UI環境の初期化
       await this.initUIEnvironment();
@@ -23,423 +33,964 @@ class MascotNanaiApp {
       // イベントリスナーの設定
       this.setupEventListeners();
       
-      // 初期ビューの表示
-      this.showView('ghost');
+      // 設定読み込み
+      this.loadSettings();
       
+      // UI設定の適用
+      this.applyGhostSize();
+      
+      // 自動ゴースト読み込み
+      if (this.settings.autoLoadGhost) {
+        await this.autoLoadGhost();
+      }
+      
+      // 初期化完了
       this.isInitialized = true;
-      this.updateStatus('Android向けUI検証準備完了');
+      this.updateStatus('準備完了', true);
       
-      console.log('✅ Android UI検証環境初期化完了');
+      // 初期状態では何も表示しない
+      this.updateGhostCharacter(null);
+      
+      // 秒間隔イベントの開始
+      this.startSecondTimer();
+      
+      // 初期メッセージ表示（3秒後に非表示）
+      this.showBalloon('Mascot Nanaiへようこそ！右上メニューからゴーストを選択してください。');
+      setTimeout(() => this.hideBalloon(), 3000);
+      
+      console.log('✅ 透過マスコットUI初期化完了');
       
     } catch (error) {
-      console.error('❌ Android UI検証環境の初期化に失敗:', error);
-      this.updateStatus(`エラー: ${error.message}`);
+      console.error('❌ UI初期化に失敗:', error);
+      this.updateStatus(`エラー: ${error.message}`, false);
     }
   }
 
-  async initUIEnvironment() {
-    // Android向けUI機能の初期化
-    console.log('📱 Android向けUI機能準備中...');
+  initUIEnvironment() {
+    console.log('📱 マスコットUI機能準備中...');
     
-    // Android向けUI機能の準備
-    // - シングルコンテナ管理
-    // - ビュー切り替え
-    // - タッチインタラクション
-    // - Android固有制約への対応
-  }
-
-  setupEventListeners() {
-    // ビュー切り替えボタン
-    const showGhostBtn = document.getElementById('show-ghost');
-    if (showGhostBtn) {
-      showGhostBtn.addEventListener('click', () => {
-        this.showView('ghost');
-      });
-    }
-
-    const showBalloonBtn = document.getElementById('show-balloon');
-    if (showBalloonBtn) {
-      showBalloonBtn.addEventListener('click', () => {
-        this.showView('balloon');
-      });
-    }
-
-    const showSettingsBtn = document.getElementById('show-settings');
-    if (showSettingsBtn) {
-      showSettingsBtn.addEventListener('click', () => {
-        this.showView('settings');
-      });
-    }
-
-    // 設定画面の戻るボタン
-    const backToGhostBtn = document.getElementById('back-to-ghost');
-    if (backToGhostBtn) {
-      backToGhostBtn.addEventListener('click', () => {
-        this.showView('ghost');
-      });
-    }
-
-    // ゴースト表示切り替え
-    const ghostVisibleCheckbox = document.getElementById('ghost-visible');
-    if (ghostVisibleCheckbox) {
-      ghostVisibleCheckbox.addEventListener('change', (e) => {
-        this.toggleGhostVisibility(e.target.checked);
-      });
-    }
-
-    // ゴーストキャラクターのタッチインタラクション
-    const ghostCharacter = document.getElementById('ghost-character');
-    if (ghostCharacter) {
-      ghostCharacter.addEventListener('click', () => {
-        this.onGhostTouch();
-      });
-    }
-
-    // SHIORIテストボタン
-    const scanGhostsBtn = document.getElementById('scan-ghosts');
-    if (scanGhostsBtn) {
-      scanGhostsBtn.addEventListener('click', () => {
-        this.scanGhosts();
-      });
-    }
-
-    const testShioriBtn = document.getElementById('test-shiori');
-    if (testShioriBtn) {
-      testShioriBtn.addEventListener('click', () => {
-        this.testShiori();
-      });
-    }
-
-    const loadTestGhostBtn = document.getElementById('load-test-ghost');
-    if (loadTestGhostBtn) {
-      loadTestGhostBtn.addEventListener('click', () => {
-        this.loadTestGhost();
-      });
-    }
-
-    // デバッグ用テストボタンがあれば接続
-    const debugTestBtn = document.getElementById('debug-test');
-    if (debugTestBtn) {
-      debugTestBtn.addEventListener('click', () => {
-        this.debugTest();
-      });
-    }
-
-    // テキストコピー機能の強化
-    this.setupTextCopyFeatures();
-  }
-
-  setupTextCopyFeatures() {
-    // レスポンスエリアでのテキストコピー機能強化
-    const responseArea = document.getElementById('shiori-response');
-    if (responseArea) {
-      // ダブルクリックで全選択
-      responseArea.addEventListener('dblclick', () => {
-        this.selectAllText(responseArea);
-      });
-
-      // 右クリックでコンテキストメニュー（コピー）
-      responseArea.addEventListener('contextmenu', (e) => {
-        // ブラウザのデフォルトコンテキストメニューを有効にする
-        e.stopPropagation();
-      });
-
-      // 長押しでテキスト選択（モバイル対応）
-      let touchTimer = null;
-      responseArea.addEventListener('touchstart', (e) => {
-        touchTimer = setTimeout(() => {
-          this.selectAllText(responseArea);
-        }, 800); // 800ms長押し
-      });
-
-      responseArea.addEventListener('touchend', () => {
-        if (touchTimer) {
-          clearTimeout(touchTimer);
-          touchTimer = null;
-        }
-      });
-
-      responseArea.addEventListener('touchmove', () => {
-        if (touchTimer) {
-          clearTimeout(touchTimer);
-          touchTimer = null;
-        }
-      });
-    }
-
-    // ゴーストリストでも同様の機能を追加
-    const ghostList = document.getElementById('ghost-list');
-    if (ghostList) {
-      ghostList.addEventListener('dblclick', () => {
-        this.selectAllText(ghostList);
-      });
-    }
-  }
-
-  selectAllText(element) {
-    if (window.getSelection) {
-      const selection = window.getSelection();
-      const range = document.createRange();
-      range.selectNodeContents(element);
-      selection.removeAllRanges();
-      selection.addRange(range);
+    // UI要素の取得
+    this.elements = {
+      // メイン要素
+      statusText: document.getElementById('status-text'),
+      connectionStatus: document.getElementById('connection-status'),
+      ghostCharacter: document.getElementById('ghost-character'),
+      balloonDisplay: document.getElementById('balloon-display'),
+      balloonText: document.getElementById('balloon-text'),
       
-      console.log('📋 テキスト全選択完了');
-      this.updateStatus('テキストを全選択しました（Ctrl+Cでコピー）');
-    }
+      // モーダル要素
+      modalOverlay: document.getElementById('modal-overlay'),
+      modalContent: document.getElementById('modal-content'),
+      modalClose: document.getElementById('modal-close'),
+    };
   }
 
-  showView(viewName) {
-    console.log(`📱 ビュー切り替え: ${viewName}`);
-    
-    // 全ビューを非表示
-    const views = document.querySelectorAll('.view');
-    views.forEach(view => {
-      view.classList.add('hidden');
-    });
+  // ===========================================
+  // 自動ゴースト読み込み機能
+  // ===========================================
 
-    // 指定されたビューを表示
-    const targetView = document.getElementById(`${viewName}-view`);
-    if (targetView) {
-      targetView.classList.remove('hidden');
-      this.currentView = viewName;
-      this.updateStatus(`${viewName}ビュー表示中`);
-    }
-  }
-
-  toggleGhostVisibility(visible) {
-    const ghostCharacter = document.getElementById('ghost-character');
-    if (ghostCharacter) {
-      ghostCharacter.style.display = visible ? 'block' : 'none';
-      this.updateStatus(`ゴースト表示: ${visible ? 'ON' : 'OFF'}`);
-    }
-  }
-
-  onGhostTouch() {
-    console.log('👻 ゴーストタッチ検出');
-    
-    // バルーンビューを表示
-    this.showView('balloon');
-    
-    // メッセージをランダム選択
-    const messages = [
-      'こんにちは！',
-      'タッチありがとう！',
-      'Android向けUI検証中です',
-      'どんな機能が欲しいですか？',
-      'がんばって開発していますよ～'
-    ];
-    
-    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-    const balloonText = document.getElementById('balloon-text');
-    if (balloonText) {
-      balloonText.textContent = randomMessage;
-    }
-
-    // 3秒後にゴーストビューに戻る
-    setTimeout(() => {
-      this.showView('ghost');
-    }, 3000);
-  }
-
-  updateStatus(message) {
-    const statusElement = document.getElementById('app-status');
-    if (statusElement) {
-      statusElement.textContent = message;
-    }
-    console.log(`📊 Status: ${message}`);
-  }
-
-  // SHIORI関連のテスト機能
-  async scanGhosts() {
-    console.log('🔍 ゴーストディレクトリをスキャン中...');
-    this.updateStatus('ゴーストスキャン中...');
+  async autoLoadGhost() {
+    console.log('🔄 自動ゴースト読み込み開始...');
     
     try {
-      // 相対パスでプロジェクト内のassetsディレクトリを指定
-      const testPath = "./assets/ghost";
-      console.log(`📂 スキャン対象: ${testPath}`);
+      // 保存されたゴースト情報を読み込み
+      const savedGhost = localStorage.getItem('mascot-nanai-current-ghost');
+      if (savedGhost) {
+        const ghostInfo = JSON.parse(savedGhost);
+        console.log('💾 保存されたゴースト情報:', ghostInfo);
+        
+        // ゴーストの存在確認とロード
+        const exists = await this.verifyGhostExists(ghostInfo);
+        if (exists) {
+          this.currentGhost = ghostInfo;
+          this.updateGhostCharacter(ghostInfo.name);
+          this.updateStatus(`ゴースト「${ghostInfo.name}」をロード`, true);
+          return;
+        }
+      }
       
-      const result = await globalThis.__TAURI__.core.invoke('scan_ghost_directory', { 
-        ghostDir: testPath 
+      // 保存されたゴーストがない場合、デフォルトディレクトリをスキャン
+      await this.scanAndLoadFirstGhost();
+      
+    } catch (error) {
+      console.error('❌ 自動ゴースト読み込みエラー:', error);
+      this.updateStatus('ゴースト読み込み失敗', false);
+      // エラーの場合は何も表示しない
+      this.updateGhostCharacter(null);
+    }
+  }
+
+  async verifyGhostExists(ghostInfo) {
+    try {
+      // Tauriが利用可能でない場合（ブラウザテスト等）
+      if (!window.__TAURI__) {
+        console.log('Tauri環境ではありません - ローカルテスト中');
+        return false;
+      }
+      
+      const result = await window.__TAURI__.invoke('scan_ghosts', { 
+        ghostPath: ghostInfo.path || 'assets/ghost' 
       });
       
-      console.log('✅ ゴーストスキャン結果:', result);
-      this.displayGhostList(result);
-      this.updateStatus(`ゴーストスキャン完了: ${result.length}個のゴーストを発見`);
+      return result.ghosts?.some(g => g.name === ghostInfo.name) || false;
+    } catch (error) {
+      console.error('ゴースト存在確認エラー:', error);
+      return false;
+    }
+  }
+
+  async scanAndLoadFirstGhost() {
+    console.log('🔍 デフォルトゴーストスキャン開始...');
+    
+    try {
+      // Tauriが利用可能でない場合のエラーハンドリング
+      if (!window.__TAURI__) {
+        console.log('Tauri環境ではありません');
+        this.updateStatus('開発環境モード', false);
+        this.updateGhostCharacter(null);
+        return;
+      }
+      
+      const result = await window.__TAURI__.invoke('scan_ghosts', { 
+        ghostPath: 'assets/ghost' 
+      });
+      
+      this.ghosts = result.ghosts || [];
+      console.log(`👻 ${this.ghosts.length}個のゴーストを発見`);
+      
+      if (this.ghosts.length > 0) {
+        // mock_nanaiを最優先で選択、見つからない場合は最初のゴーストを選択
+        let defaultGhost = this.ghosts.find(g => g.name === 'mock_nanai');
+        if (!defaultGhost) {
+          defaultGhost = this.ghosts[0];
+        }
+        
+        this.selectGhost(defaultGhost.name);
+        console.log(`🎯 「${defaultGhost.name}」を自動選択`);
+      } else {
+        this.updateStatus('ゴーストが見つかりません', false);
+        this.showBalloon('ゴーストファイルが見つかりません。assets/ghostディレクトリを確認してください。');
+        setTimeout(() => this.hideBalloon(), 5000);
+        // ゴーストが見つからない場合は何も表示しない
+        this.updateGhostCharacter(null);
+      }
       
     } catch (error) {
       console.error('❌ ゴーストスキャンエラー:', error);
-      this.updateStatus(`ゴーストスキャンエラー: ${error}`);
-      
-      // エラーの詳細情報を表示
-      this.displayGhostList([]);
-      const errorDiv = document.getElementById('ghost-list');
-      if (errorDiv) {
-        errorDiv.innerHTML = `<div class="error-info">
-          <h4>エラー詳細:</h4>
-          <pre>${error}</pre>
-          <p>Tauriコマンドが正常に呼び出されていない可能性があります。</p>
-        </div>`;
-      }
+      this.updateStatus('スキャンエラー', false);
+      // エラーの場合は何も表示しない
+      this.updateGhostCharacter(null);
     }
   }
 
-  async testShiori() {
-    console.log('🧪 SHIORI統合テスト開始...');
-    this.updateStatus('SHIORI統合テスト中...');
+  setupEventListeners() {
+    console.log('🔧 イベントリスナー設定中...');
+
+    // 右上メニューボタン
+    const menuBtn = document.getElementById('menu-btn');
+    const menuDropdown = document.getElementById('menu-dropdown');
     
-    try {
-      // テスト用リクエスト
-      const testRequest = "GET Version SHIORI/3.0\r\n\r\n";
-      console.log(`📨 送信リクエスト: ${testRequest}`);
-      
-      const result = await globalThis.__TAURI__.core.invoke('send_shiori_request', { 
-        request: testRequest 
-      });
-      
-      console.log('✅ SHIORIレスポンス:', result);
-      this.displayShioriResponse(result);
-      this.updateStatus('SHIORI統合テスト完了');
-      
-    } catch (error) {
-      console.error('❌ SHIORI統合テストエラー:', error);
-      this.updateStatus(`SHIORI統合テストエラー: ${error}`);
-      
-      // エラーの詳細情報を表示
-      const responseDiv = document.getElementById('shiori-response');
-      if (responseDiv) {
-        responseDiv.innerHTML = `<div class="error-info">
-          <h4>SHIORI通信エラー:</h4>
-          <pre>${error}</pre>
-          <p>SHIORIエンジンが読み込まれていない可能性があります。先にゴーストを読み込んでください。</p>
-        </div>`;
+    menuBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggleMenu(menuDropdown);
+    });
+
+    // メニュー外をクリックしたら閉じる
+    document.addEventListener('click', () => {
+      this.hideMenu(menuDropdown);
+    });
+
+    // メニューアイテム
+    document.getElementById('ghost-btn')?.addEventListener('click', () => {
+      this.hideMenu(menuDropdown);
+      this.showGhostModal();
+    });
+    
+    document.getElementById('balloon-btn')?.addEventListener('click', () => {
+      this.hideMenu(menuDropdown);
+      this.showBalloonModal();
+    });
+    
+    document.getElementById('scan-btn')?.addEventListener('click', () => {
+      this.hideMenu(menuDropdown);
+      this.showScanModal();
+    });
+    
+    document.getElementById('test-btn')?.addEventListener('click', () => {
+      this.hideMenu(menuDropdown);
+      this.showTestModal();
+    });
+
+    document.getElementById('settings-btn')?.addEventListener('click', () => {
+      this.hideMenu(menuDropdown);
+      this.showSettingsModal();
+    });
+    
+    document.getElementById('debug-btn')?.addEventListener('click', () => {
+      this.hideMenu(menuDropdown);
+      this.showDebugModal();
+    });
+    
+    document.getElementById('help-btn')?.addEventListener('click', () => {
+      this.hideMenu(menuDropdown);
+      this.showHelpModal();
+    });
+
+    // ゴーストキャラクターのクリック
+    this.elements.ghostCharacter?.addEventListener('click', () => {
+      this.onGhostClick();
+    });
+
+    // 右クリックでメニュー表示
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      this.toggleMenu(menuDropdown);
+    });
+
+    // モーダル制御
+    this.elements.modalClose?.addEventListener('click', () => this.hideModal());
+    this.elements.modalOverlay?.addEventListener('click', (e) => {
+      if (e.target === this.elements.modalOverlay) {
+        this.hideModal();
       }
-    }
+    });
+
+    // キーボードショートカット
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.hideModal();
+        this.hideMenu(menuDropdown);
+      } else if (e.ctrlKey && e.key === 'r') {
+        e.preventDefault();
+        this.refreshGhosts();
+      }
+    });
   }
 
-  async loadTestGhost() {
-    console.log('👻 テストゴースト読み込み開始...');
-    this.updateStatus('テストゴースト読み込み中...');
-    
-    try {
-      // テスト用のゴースト名（実際に存在するmock_nanai）
-      const testGhostName = "mock_nanai";
-      console.log(`👻 読み込み対象: ${testGhostName}`);
-      
-      const result = await globalThis.__TAURI__.core.invoke('load_ghost', { 
-        ghostName: testGhostName 
-      });
-      
-      console.log('✅ テストゴースト読み込み結果:', result);
-      this.updateStatus('テストゴースト読み込み完了');
-      
-      // 読み込み成功時のフィードバック
-      const responseDiv = document.getElementById('shiori-response');
-      if (responseDiv) {
-        responseDiv.innerHTML = `<div class="success-info">
-          <h4>ゴースト読み込み成功:</h4>
-          <pre>${result}</pre>
-          <p>これでSHIORIテストが可能になりました。</p>
-        </div>`;
-      }
-      
-    } catch (error) {
-      console.error('❌ テストゴースト読み込みエラー:', error);
-      this.updateStatus(`テストゴースト読み込みエラー: ${error}`);
-      
-      // エラーの詳細情報を表示
-      const responseDiv = document.getElementById('shiori-response');
-      if (responseDiv) {
-        responseDiv.innerHTML = `<div class="error-info">
-          <h4>ゴースト読み込みエラー:</h4>
-          <pre>${error}</pre>
-          <p>指定されたゴーストが見つからないか、SHIORIファイルに問題がある可能性があります。</p>
-        </div>`;
-      }
-    }
-  }
+  // ===========================================
+  // ゴースト・バルーン表示機能
+  // ===========================================
 
-  async debugTest() {
-    console.log('🔧 デバッグテスト開始...');
-    this.updateStatus('Tauriコマンドテスト中...');
-    
-    try {
-      const result = await globalThis.__TAURI__.core.invoke('test_command');
-      console.log('✅ デバッグテスト成功:', result);
-      this.updateStatus(`デバッグテスト成功: ${result}`);
-      
-      const responseDiv = document.getElementById('shiori-response');
-      if (responseDiv) {
-        responseDiv.innerHTML = `<div class="success-info">
-          <h4>Tauriコマンドテスト成功:</h4>
-          <pre>${result}</pre>
-          <p>Tauri統合が正常に動作しています。</p>
-        </div>`;
-      }
-      
-    } catch (error) {
-      console.error('❌ デバッグテストエラー:', error);
-      this.updateStatus(`デバッグテストエラー: ${error}`);
-      
-      const responseDiv = document.getElementById('shiori-response');
-      if (responseDiv) {
-        responseDiv.innerHTML = `<div class="error-info">
-          <h4>Tauriコマンドテストエラー:</h4>
-          <pre>${error}</pre>
-          <p>Tauri統合に問題があります。</p>
-        </div>`;
-      }
-    }
-  }
-
-  displayGhostList(ghosts) {
-    const ghostListDiv = document.getElementById('ghost-list');
-    if (!ghostListDiv) return;
-    
-    if (ghosts && ghosts.length > 0) {
-      ghostListDiv.innerHTML = '<h4>発見されたゴースト:</h4>' +
-        ghosts.map(ghost => `<div class="ghost-item">${ghost.name} (${ghost.shiori_type})</div>`).join('');
+  onGhostClick() {
+    // ゴーストクリック時の動作
+    if (this.currentGhost) {
+      // Tauri側のマウスクリックイベントも送信
+      this.notifyMouseClick();
+      // SHIORI経由でマウスクリックイベント送信
+      this.sendShioriEvent('OnMouseClick');
     } else {
-      ghostListDiv.innerHTML = '<p>ゴーストが見つかりませんでした。</p>';
+      // ゴーストが選択されていない場合は何もしない
+      console.log('ゴーストが選択されていません');
     }
   }
 
-  displayShioriResponse(response) {
-    const responseDiv = document.getElementById('shiori-response');
-    if (!responseDiv) return;
+  startSecondTimer() {
+    // 1秒間隔でOnSecondChangeイベントを送信
+    this.secondTimer = setInterval(async () => {
+      if (this.currentGhost) {
+        try {
+          await window.__TAURI__.invoke('on_second_change');
+        } catch (error) {
+          // エラーは無視（SHIORIが読み込まれていない場合など）
+        }
+      }
+    }, 1000);
+  }
+
+  stopSecondTimer() {
+    if (this.secondTimer) {
+      clearInterval(this.secondTimer);
+      this.secondTimer = null;
+    }
+  }
+
+  async notifyMouseClick() {
+    try {
+      await window.__TAURI__.invoke('on_mouse_click');
+      console.log('🖱️ マウスクリック通知送信');
+    } catch (error) {
+      console.log('マウスクリック通知エラー:', error);
+    }
+  }
+
+  async sendShioriEvent(eventName) {
+    try {
+      console.log(`📤 SHIORIイベント送信: ${eventName}`);
+      
+      const response = await window.__TAURI__.invoke('send_shiori_event', { 
+        event: eventName 
+      });
+      
+      if (response && response.trim()) {
+        this.showBalloon(response);
+      } else {
+        // SHIORIからの応答がない場合のフォールバック
+        this.showBalloon('こんにちは！');
+      }
+      
+      // 3秒後に自動で隠す
+      setTimeout(() => this.hideBalloon(), 3000);
+      
+    } catch (error) {
+      console.error('❌ SHIORIイベントエラー:', error);
+      this.showBalloon('エラーが発生しました。');
+      setTimeout(() => this.hideBalloon(), 3000);
+    }
+  }
+
+  async sendRandomMessageToGhost() {
+    // 利用可能なSHIORIイベント
+    const randomEvents = [
+      'OnBoot',
+      'OnSecondChange',
+      'OnTalk',
+      'OnAITalk'
+    ];
     
-    responseDiv.innerHTML = `<h4>SHIORIレスポンス:</h4><pre>${response}</pre>`;
+    const randomEvent = randomEvents[Math.floor(Math.random() * randomEvents.length)];
+    await this.sendShioriEvent(randomEvent);
   }
 
-  // 外部API（Android実装用）
-  getAppInfo() {
-    return {
-      isInitialized: this.isInitialized,
-      platform: 'Android検証用',
-      currentView: this.currentView,
-      version: '0.1.0-android-ui'
+  showBalloon(text) {
+    if (this.elements.balloonText && this.elements.balloonDisplay) {
+      this.elements.balloonText.textContent = text;
+      this.elements.balloonDisplay.style.display = 'block';
+    }
+  }
+
+  hideBalloon() {
+    if (this.elements.balloonDisplay) {
+      this.elements.balloonDisplay.style.display = 'none';
+    }
+  }
+
+  updateGhostCharacter(ghostName) {
+    // ゴーストキャラクターの更新
+    if (this.elements.ghostCharacter) {
+      const placeholder = this.elements.ghostCharacter.querySelector('.character-placeholder');
+      if (placeholder) {
+        // ghostNameがnullまたは未定義の場合は何も表示しない
+        if (!ghostName) {
+          placeholder.innerHTML = '';
+          placeholder.title = '';
+          return;
+        }
+        
+        // mock_nanaiの場合は実際の画像を表示
+        if (ghostName === 'mock_nanai') {
+          placeholder.innerHTML = `<img src="assets/ghost/mock_nanai/shell/master/surface0.png" 
+                                         alt="${ghostName}" 
+                                         style="width: 100%; height: 100%; object-fit: contain;" 
+                                         onerror="console.error('画像読み込みエラー'); this.style.display='none';">`;
+        } else {
+          // その他のゴーストの場合も何も表示しない
+          placeholder.innerHTML = '';
+        }
+        
+        placeholder.title = ghostName || '';
+      }
+    }
+  }
+
+  applyGhostSize() {
+    const sizes = {
+      small: '80px',
+      medium: '120px',
+      large: '160px'
     };
+    
+    const ghostDisplay = document.querySelector('.ghost-display');
+    const placeholder = document.querySelector('.character-placeholder');
+    
+    if (ghostDisplay) {
+      const size = sizes[this.settings.ghostSize] || sizes.medium;
+      ghostDisplay.style.width = size;
+      ghostDisplay.style.height = size;
+    }
+    
+    if (placeholder) {
+      // テキストベースの場合のフォントサイズ
+      placeholder.style.fontSize = sizes[this.settings.ghostSize] || sizes.medium;
+    }
+  }
+
+  // ===========================================
+  // メニュー制御機能
+  // ===========================================
+
+  toggleMenu(menu) {
+    if (!menu) return;
+    menu.classList.toggle('show');
+  }
+
+  hideMenu(menu) {
+    if (!menu) return;
+    menu.classList.remove('show');
+  }
+
+  // ===========================================
+  // モーダル制御機能
+  // ===========================================
+
+  showModal(contentId) {
+    const content = document.getElementById(contentId);
+    if (!content || !this.elements.modalContent || !this.elements.modalOverlay) return;
+
+    this.elements.modalContent.innerHTML = content.innerHTML;
+    this.elements.modalOverlay.style.display = 'flex';
+    
+    // モーダル固有のイベントリスナーを設定
+    this.setupModalEventListeners(contentId);
+  }
+
+  hideModal() {
+    if (this.elements.modalOverlay) {
+      this.elements.modalOverlay.style.display = 'none';
+    }
+  }
+
+  setupModalEventListeners(contentId) {
+    switch (contentId) {
+      case 'ghost-modal-content':
+        this.setupGhostModalListeners();
+        break;
+      case 'balloon-modal-content':
+        this.setupBalloonModalListeners();
+        break;
+      case 'scan-modal-content':
+        this.setupScanModalListeners();
+        break;
+      case 'test-modal-content':
+        this.setupTestModalListeners();
+        break;
+      case 'settings-modal-content':
+        this.setupSettingsModalListeners();
+        break;
+      case 'debug-modal-content':
+        this.setupDebugModalListeners();
+        break;
+    }
+  }
+
+  // ===========================================
+  // ゴーストモーダル（強化版）
+  // ===========================================
+
+  showGhostModal() {
+    this.showModal('ghost-modal-content');
+    this.refreshGhostList();
+    this.updateCurrentGhostDisplay();
+  }
+
+  setupGhostModalListeners() {
+    document.getElementById('refresh-ghosts-btn')?.addEventListener('click', () => {
+      this.refreshGhosts();
+    });
+  }
+
+  async refreshGhosts() {
+    console.log('🔄 ゴーストリスト更新中...');
+    
+    try {
+      const ghostDirectory = document.getElementById('ghost-directory')?.value || 'assets/ghost';
+      
+      this.updateGhostStatus('スキャン中...');
+      
+      // Tauriが利用可能でない場合のエラーハンドリング
+      if (!window.__TAURI__) {
+        this.updateGhostStatus('Tauri環境ではありません');
+        console.log('Tauri環境ではありません - ダミーデータを使用');
+        this.ghosts = [];
+        this.refreshGhostList();
+        return;
+      }
+      
+      const result = await window.__TAURI__.invoke('scan_ghosts', { 
+        ghostPath: ghostDirectory 
+      });
+      
+      console.log('👻 ゴーストスキャン結果:', result);
+      
+      this.ghosts = result.ghosts || [];
+      this.refreshGhostList();
+      
+      this.updateGhostStatus(`${this.ghosts.length}個のゴーストが見つかりました`);
+      
+      // デバッグ情報も表示
+      if (result.debug) {
+        console.log('🔍 スキャンデバッグ情報:', result.debug);
+      }
+      
+    } catch (error) {
+      console.error('❌ ゴーストスキャンエラー:', error);
+      this.updateGhostStatus(`エラー: ${error}`);
+      this.ghosts = [];
+      this.refreshGhostList();
+    }
+  }
+
+  refreshGhostList() {
+    const ghostList = document.getElementById('ghost-list');
+    if (!ghostList) return;
+
+    if (this.ghosts.length === 0) {
+      ghostList.innerHTML = '<div class="info">ゴーストが見つかりません。パスを確認してスキャンしてください。</div>';
+      return;
+    }
+
+    ghostList.innerHTML = this.ghosts.map((ghost, index) => 
+      `<div class="ghost-item ${this.currentGhost?.name === ghost.name ? 'active' : ''}" 
+           data-ghost="${ghost.name}" data-index="${index}">
+        <strong>${ghost.name}</strong><br>
+        <small>${ghost.path}</small>
+      </div>`
+    ).join('');
+
+    // ゴーストアイテムクリックイベント
+    ghostList.querySelectorAll('.ghost-item').forEach(item => {
+      item.addEventListener('click', () => {
+        this.selectGhost(item.dataset.ghost);
+        
+        // 他のアイテムの active クラスを削除
+        ghostList.querySelectorAll('.ghost-item').forEach(i => i.classList.remove('active'));
+        // 選択されたアイテムに active クラスを追加
+        item.classList.add('active');
+      });
+    });
+  }
+
+  selectGhost(ghostName) {
+    const ghost = this.ghosts.find(g => g.name === ghostName);
+    if (!ghost) return;
+
+    this.currentGhost = ghost;
+    this.updateCurrentGhostDisplay();
+    this.updateGhostCharacter(ghostName);
+    
+    // ゴースト情報を保存
+    localStorage.setItem('mascot-nanai-current-ghost', JSON.stringify(ghost));
+    
+    // SHIORI初期化を試行
+    this.initializeGhostSHIORI(ghost);
+    
+    this.showBalloon(`ゴースト「${ghostName}」を選択しました。`);
+    setTimeout(() => this.hideBalloon(), 2000);
+    
+    this.updateStatus(`ゴースト: ${ghostName}`, true);
+  }
+
+  async initializeGhostSHIORI(ghost) {
+    try {
+      console.log(`🎭 SHIORI初期化開始: ${ghost.name}`);
+      
+      const result = await window.__TAURI__.invoke('load_ghost', {
+        ghostName: ghost.name
+      });
+      
+      console.log('✅ SHIORI初期化成功:', result);
+      
+      // 初期化後にOnBootイベントを送信
+      setTimeout(async () => {
+        try {
+          await this.sendShioriEvent('OnBoot');
+        } catch (error) {
+          console.log('OnBootイベント送信スキップ:', error);
+        }
+      }, 1000);
+      
+    } catch (error) {
+      console.error('❌ SHIORI初期化エラー:', error);
+    }
+  }
+
+  updateCurrentGhostDisplay() {
+    const currentGhostEl = document.getElementById('current-ghost');
+    if (currentGhostEl && this.currentGhost) {
+      currentGhostEl.textContent = this.currentGhost.name;
+      currentGhostEl.style.background = '#e8f5e8';
+      currentGhostEl.style.color = '#2e7d32';
+    } else if (currentGhostEl) {
+      currentGhostEl.textContent = '未選択';
+      currentGhostEl.style.background = '#f5f5f5';
+      currentGhostEl.style.color = '#666';
+    }
+  }
+
+  updateGhostStatus(message) {
+    const ghostList = document.getElementById('ghost-list');
+    if (ghostList) {
+      ghostList.innerHTML = `<div class="info">${message}</div>`;
+    }
+  }
+
+  // ===========================================
+  // その他のモーダル機能（既存実装を維持）
+  // ===========================================
+
+  showBalloonModal() {
+    this.showModal('balloon-modal-content');
+  }
+
+  setupBalloonModalListeners() {
+    document.getElementById('refresh-balloons-btn')?.addEventListener('click', () => {
+      this.refreshBalloons();
+    });
+  }
+
+  refreshBalloons() {
+    console.log('💭 バルーン更新');
+    this.showBalloon('バルーン機能は今後実装予定です。');
+    setTimeout(() => this.hideBalloon(), 2000);
+  }
+
+  showScanModal() {
+    this.showModal('scan-modal-content');
+  }
+
+  setupScanModalListeners() {
+    document.getElementById('start-scan-btn')?.addEventListener('click', () => {
+      this.startScan();
+    });
+  }
+
+  async startScan() {
+    const scanPath = document.getElementById('scan-path')?.value || 'assets/';
+    const scanResults = document.getElementById('scan-results');
+    const debugInfo = document.getElementById('scan-debug-info');
+
+    if (scanResults) {
+      scanResults.innerHTML = '<div class="info">スキャン実行中...</div>';
+    }
+
+    try {
+      const result = await window.__TAURI__.invoke('scan_ghosts', { 
+        ghostPath: scanPath 
+      });
+
+      if (scanResults) {
+        const resultHtml = `
+          <div><strong>スキャン完了:</strong></div>
+          <div>パス: ${result.inputPath} → ${result.resolvedPath}</div>
+          <div>検出ゴースト: ${result.ghosts?.length || 0}個</div>
+          ${result.ghosts?.map(g => `<div>- ${g.name} (${g.path})</div>`).join('') || ''}
+        `;
+        scanResults.innerHTML = resultHtml;
+      }
+
+      if (debugInfo && result.debug) {
+        debugInfo.innerHTML = `<pre>${result.debug}</pre>`;
+      }
+
+    } catch (error) {
+      if (scanResults) {
+        scanResults.innerHTML = `<div class="error">エラー: ${error}</div>`;
+      }
+    }
+  }
+
+  showTestModal() {
+    this.showModal('test-modal-content');
+  }
+
+  setupTestModalListeners() {
+    document.getElementById('test-shiori-init')?.addEventListener('click', () => {
+      this.testShioriInit();
+    });
+    
+    document.getElementById('test-shiori-request')?.addEventListener('click', () => {
+      this.testShioriRequest();
+    });
+    
+    document.getElementById('test-shiori-finalize')?.addEventListener('click', () => {
+      this.testShioriFinalize();
+    });
+    
+    document.getElementById('send-test-message')?.addEventListener('click', () => {
+      this.sendTestMessage();
+    });
+    
+    document.getElementById('test-path-resolve')?.addEventListener('click', () => {
+      this.testPathResolve();
+    });
+  }
+
+  async testShioriInit() {
+    this.updateTestResults('SHIORI初期化テスト実行中...');
+    
+    try {
+      const result = await window.__TAURI__.invoke('shiori_initialize', {});
+      this.updateTestResults(`SHIORI初期化成功: ${JSON.stringify(result, null, 2)}`);
+    } catch (error) {
+      this.updateTestResults(`SHIORI初期化エラー: ${error}`);
+    }
+  }
+
+  async testShioriRequest() {
+    this.updateTestResults('SHIORIリクエストテスト実行中...');
+    
+    try {
+      const result = await window.__TAURI__.invoke('shiori_request', { 
+        request: 'GET SHIORI/3.0\\r\\nCharset: UTF-8\\r\\n\\r\\n' 
+      });
+      this.updateTestResults(`SHIORIリクエスト成功: ${result}`);
+    } catch (error) {
+      this.updateTestResults(`SHIORIリクエストエラー: ${error}`);
+    }
+  }
+
+  async testShioriFinalize() {
+    this.updateTestResults('SHIORI終了テスト実行中...');
+    
+    try {
+      const result = await window.__TAURI__.invoke('shiori_finalize', {});
+      this.updateTestResults(`SHIORI終了成功: ${JSON.stringify(result, null, 2)}`);
+    } catch (error) {
+      this.updateTestResults(`SHIORI終了エラー: ${error}`);
+    }
+  }
+
+  async sendTestMessage() {
+    const message = document.getElementById('test-message')?.value || 'hello';
+    this.updateTestResults(`テストメッセージ送信中: "${message}"`);
+    
+    try {
+      const result = await window.__TAURI__.invoke('send_message_to_ghost', { 
+        message: message 
+      });
+      this.updateTestResults(`メッセージ送信成功: ${result}`);
+      
+      // バルーンに応答を表示
+      this.showBalloon(result || 'テストメッセージを送信しました');
+      setTimeout(() => this.hideBalloon(), 3000);
+      
+    } catch (error) {
+      this.updateTestResults(`メッセージ送信エラー: ${error}`);
+    }
+  }
+
+  async testPathResolve() {
+    const testPath = document.getElementById('path-test-input')?.value || '../assets/ghost';
+    this.updateTestResults(`パス解決テスト実行中: "${testPath}"`);
+    
+    try {
+      const result = await window.__TAURI__.invoke('resolve_asset_path', { 
+        path: testPath 
+      });
+      this.updateTestResults(`パス解決成功:\n入力: ${result.input}\n解決: ${result.resolved}`);
+    } catch (error) {
+      this.updateTestResults(`パス解決エラー: ${error}`);
+    }
+  }
+
+  updateTestResults(message) {
+    const testResults = document.getElementById('test-results');
+    if (testResults) {
+      testResults.innerHTML = `<pre>${message}</pre>`;
+    }
+  }
+
+  // ===========================================
+  // 設定モーダル（強化版）
+  // ===========================================
+
+  showSettingsModal() {
+    this.showModal('settings-modal-content');
+    this.loadSettingsModal();
+  }
+
+  setupSettingsModalListeners() {
+    document.getElementById('save-settings-btn')?.addEventListener('click', () => {
+      this.saveSettings();
+    });
+    
+    document.getElementById('reset-settings-btn')?.addEventListener('click', () => {
+      this.resetSettings();
+    });
+  }
+
+  loadSettings() {
+    // アプリ起動時の設定読み込み
+    const saved = localStorage.getItem('mascot-nanai-settings');
+    if (saved) {
+      this.settings = { ...this.settings, ...JSON.parse(saved) };
+    }
+    this.applySettings();
+  }
+
+  loadSettingsModal() {
+    // モーダル表示時の設定読み込み
+    const autoLoadGhost = document.getElementById('auto-load-ghost');
+    if (autoLoadGhost) autoLoadGhost.checked = this.settings.autoLoadGhost;
+    
+    const enableNotifications = document.getElementById('enable-notifications');
+    if (enableNotifications) enableNotifications.checked = this.settings.enableNotifications;
+    
+    const darkMode = document.getElementById('dark-mode');
+    if (darkMode) darkMode.checked = this.settings.darkMode;
+    
+    const alwaysOnTop = document.getElementById('always-on-top');
+    if (alwaysOnTop) alwaysOnTop.checked = this.settings.alwaysOnTop;
+    
+    const ghostSizeSelect = document.getElementById('ghost-size');
+    if (ghostSizeSelect) {
+      ghostSizeSelect.value = this.settings.ghostSize;
+    }
+    
+    const debugLevelSelect = document.getElementById('debug-level');
+    if (debugLevelSelect) {
+      debugLevelSelect.value = this.settings.debugLevel;
+    }
+  }
+
+  saveSettings() {
+    // UI要素から設定を取得
+    this.settings.autoLoadGhost = document.getElementById('auto-load-ghost')?.checked || false;
+    this.settings.enableNotifications = document.getElementById('enable-notifications')?.checked || false;
+    this.settings.darkMode = document.getElementById('dark-mode')?.checked || false;
+    this.settings.alwaysOnTop = document.getElementById('always-on-top')?.checked || false;
+    this.settings.ghostSize = document.getElementById('ghost-size')?.value || 'medium';
+    this.settings.debugLevel = document.getElementById('debug-level')?.value || 'info';
+
+    // ローカルストレージに保存
+    localStorage.setItem('mascot-nanai-settings', JSON.stringify(this.settings));
+
+    // 設定を適用
+    this.applySettings();
+
+    this.showBalloon('設定を保存しました。');
+    setTimeout(() => this.hideBalloon(), 2000);
+    this.hideModal();
+  }
+
+  resetSettings() {
+    this.settings = {
+      autoLoadGhost: true,
+      enableNotifications: true,
+      darkMode: false,
+      alwaysOnTop: true,
+      ghostSize: 'medium',
+      debugLevel: 'info'
+    };
+
+    localStorage.removeItem('mascot-nanai-settings');
+    this.loadSettingsModal();
+    this.applySettings();
+    this.showBalloon('設定をリセットしました。');
+    setTimeout(() => this.hideBalloon(), 2000);
+  }
+
+  applySettings() {
+    // ダークモードの適用
+    if (this.settings.darkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+
+    // ゴーストサイズの適用
+    this.applyGhostSize();
+
+    // その他の設定適用は今後実装
+  }
+
+  // ===========================================
+  // デバッグモーダル
+  // ===========================================
+
+  showDebugModal() {
+    this.showModal('debug-modal-content');
+    this.loadSystemInfo();
+  }
+
+  setupDebugModalListeners() {
+    document.getElementById('apply-log-level')?.addEventListener('click', () => {
+      this.applyLogLevel();
+    });
+    
+    document.getElementById('clear-logs')?.addEventListener('click', () => {
+      this.clearLogs();
+    });
+    
+    document.getElementById('export-logs')?.addEventListener('click', () => {
+      this.exportLogs();
+    });
+  }
+
+  async loadSystemInfo() {
+    try {
+      const osInfoEl = document.getElementById('os-info');
+      const tauriVersionEl = document.getElementById('tauri-version');
+      const appVersionEl = document.getElementById('app-version');
+      
+      if (osInfoEl) osInfoEl.textContent = 'Windows';
+      if (tauriVersionEl) tauriVersionEl.textContent = '2.1.0';
+      if (appVersionEl) appVersionEl.textContent = 'v1.0.0';
+
+    } catch (error) {
+      console.error('システム情報取得エラー:', error);
+    }
+  }
+
+  applyLogLevel() {
+    const logLevel = document.getElementById('log-level')?.value || 'debug';
+    console.log(`ログレベルを ${logLevel} に設定`);
+    this.addLogEntry('info', `ログレベルを ${logLevel} に変更しました`);
+  }
+
+  clearLogs() {
+    const logOutput = document.getElementById('log-output');
+    if (logOutput) {
+      logOutput.innerHTML = '<div class="log-entry info">ログをクリアしました</div>';
+    }
+  }
+
+  exportLogs() {
+    const logOutput = document.getElementById('log-output');
+    if (logOutput) {
+      const logs = logOutput.textContent;
+      const blob = new Blob([logs], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `mascot-nanai-logs-${new Date().toISOString().slice(0, 10)}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  addLogEntry(level, message) {
+    const logOutput = document.getElementById('log-output');
+    if (logOutput) {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${level}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logOutput.appendChild(entry);
+      logOutput.scrollTop = logOutput.scrollHeight;
+    }
+  }
+
+  showHelpModal() {
+    this.showModal('help-modal-content');
+  }
+
+  // ===========================================
+  // ステータス更新
+  // ===========================================
+
+  updateStatus(text, connected = null) {
+    if (this.elements.statusText) {
+      this.elements.statusText.textContent = text;
+    }
+    
+    if (connected !== null && this.elements.connectionStatus) {
+      this.elements.connectionStatus.className = connected 
+        ? 'status-indicator connected' 
+        : 'status-indicator';
+    }
   }
 }
 
-// アプリケーション初期化
-let app = null;
-
-// DOM読み込み完了後に初期化
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
-} else {
-  initApp();
-}
-
-function initApp() {
-  app = new MascotNanaiApp();
-  
-  // デバッグ用：グローバルアクセス
-  if (typeof globalThis !== 'undefined') {
-    globalThis.mascotApp = app;
-  }
-}
-
-export { MascotNanaiApp };
+// アプリケーション開始
+window.addEventListener('DOMContentLoaded', () => {
+  window.mascotApp = new MascotNanaiApp();
+});

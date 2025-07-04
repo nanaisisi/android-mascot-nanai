@@ -28,11 +28,11 @@ CSS and Javascript.
   [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) +
   [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
 
-# How build
+# How to build
 
-cargo tauri dev<br>
+<code>cargo tauri dev</code>
 
-#署名無視build、apk<br>cargo tauri android build -d -t aarch64
+#署名無視build、apk<br><code>cargo tauri android build -d -t aarch64</code>
 
 # ライセンス
 
