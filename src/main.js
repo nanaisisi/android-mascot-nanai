@@ -23,7 +23,7 @@ class MascotNanaiApp {
 
   async init() {
     console.log("=== Mascot Nanai 初期化開始 ===");
-    console.log("Tauri環境:", typeof window.__TAURI__ !== "undefined");
+    console.log("Tauri環境:", typeof globalThis.__TAURI__ !== "undefined");
     console.log("DOM読み込み状況:", document.readyState);
 
     try {
@@ -126,12 +126,12 @@ class MascotNanaiApp {
   async verifyGhostExists(ghostInfo) {
     try {
       // Tauriが利用可能でない場合（ブラウザテスト等）
-      if (!window.__TAURI__) {
+      if (!globalThis.__TAURI__) {
         console.log("Tauri環境ではありません - ローカルテスト中");
         return false;
       }
 
-      const result = await window.__TAURI__.invoke("scan_ghosts", {
+      const result = await globalThis.__TAURI__.invoke("scan_ghosts", {
         ghostPath: ghostInfo.path || "assets/ghost",
       });
 
@@ -147,14 +147,14 @@ class MascotNanaiApp {
 
     try {
       // Tauriが利用可能でない場合のエラーハンドリング
-      if (!window.__TAURI__) {
+      if (!globalThis.__TAURI__) {
         console.log("Tauri環境ではありません");
         this.updateStatus("開発環境モード", false);
         this.updateGhostCharacter(null);
         return;
       }
 
-      const result = await window.__TAURI__.invoke("scan_ghosts", {
+      const result = await globalThis.__TAURI__.invoke("scan_ghosts", {
         ghostPath: "assets/ghost",
       });
 
@@ -271,8 +271,8 @@ class MascotNanaiApp {
     this.secondTimer = setInterval(async () => {
       if (this.currentGhost) {
         try {
-          await window.__TAURI__.invoke("on_second_change");
-        } catch (error) {
+          await globalThis.__TAURI__.invoke("on_second_change");
+        } catch (_error) {
           // エラーは無視（SHIORIが読み込まれていない場合など）
         }
       }
@@ -288,7 +288,7 @@ class MascotNanaiApp {
 
   async notifyMouseClick() {
     try {
-      await window.__TAURI__.invoke("on_mouse_click");
+      await globalThis.__TAURI__.invoke("on_mouse_click");
       console.log("🖱️ マウスクリック通知送信");
     } catch (error) {
       console.log("マウスクリック通知エラー:", error);
@@ -299,7 +299,7 @@ class MascotNanaiApp {
     try {
       console.log(`📤 SHIORIイベント送信: ${eventName}`);
 
-      const response = await window.__TAURI__.invoke("send_shiori_event", {
+      const response = await globalThis.__TAURI__.invoke("send_shiori_event", {
         event: eventName,
       });
 
@@ -517,7 +517,7 @@ class MascotNanaiApp {
       this.updateGhostStatus("スキャン中...");
 
       // Tauriが利用可能でない場合のエラーハンドリング
-      if (!window.__TAURI__) {
+      if (!globalThis.__TAURI__) {
         this.updateGhostStatus("Tauri環境ではありません");
         console.log("Tauri環境ではありません - ダミーデータを使用");
         this.ghosts = [];
@@ -525,7 +525,7 @@ class MascotNanaiApp {
         return;
       }
 
-      const result = await window.__TAURI__.invoke("scan_ghosts", {
+      const result = await globalThis.__TAURI__.invoke("scan_ghosts", {
         ghostPath: ghostDirectory,
       });
 
@@ -612,7 +612,7 @@ class MascotNanaiApp {
     try {
       console.log(`🎭 SHIORI初期化開始: ${ghost.name}`);
 
-      const result = await window.__TAURI__.invoke("load_ghost", {
+      const result = await globalThis.__TAURI__.invoke("load_ghost", {
         ghostName: ghost.name,
       });
 
@@ -693,7 +693,7 @@ class MascotNanaiApp {
     }
 
     try {
-      const result = await window.__TAURI__.invoke("scan_ghosts", {
+      const result = await globalThis.__TAURI__.invoke("scan_ghosts", {
         ghostPath: scanPath,
       });
 
@@ -761,7 +761,7 @@ class MascotNanaiApp {
     this.updateTestResults("SHIORI初期化テスト実行中...");
 
     try {
-      const result = await window.__TAURI__.invoke("shiori_initialize", {});
+      const result = await globalThis.__TAURI__.invoke("shiori_initialize", {});
       this.updateTestResults(
         `SHIORI初期化成功: ${JSON.stringify(result, null, 2)}`
       );
@@ -774,10 +774,12 @@ class MascotNanaiApp {
     this.updateTestResults("SHIORIリクエストテスト実行中...");
 
     try {
-      const result = await window.__TAURI__.invoke("shiori_request", {
-        request: "GET SHIORI/3.0\\r\\nCharset: UTF-8\\r\\n\\r\\n",
+      const result = await globalThis.__TAURI__.invoke("shiori_request", {
+        request: "GET SHIORI/3.0\r\nSender: test\r\nEvent: OnTest\r\n\r\n",
       });
-      this.updateTestResults(`SHIORIリクエスト成功: ${result}`);
+      this.updateTestResults(
+        `SHIORIリクエスト成功: ${JSON.stringify(result, null, 2)}`
+      );
     } catch (error) {
       this.updateTestResults(`SHIORIリクエストエラー: ${error}`);
     }
@@ -787,7 +789,7 @@ class MascotNanaiApp {
     this.updateTestResults("SHIORI終了テスト実行中...");
 
     try {
-      const result = await window.__TAURI__.invoke("shiori_finalize", {});
+      const result = await globalThis.__TAURI__.invoke("shiori_finalize", {});
       this.updateTestResults(
         `SHIORI終了成功: ${JSON.stringify(result, null, 2)}`
       );
@@ -797,34 +799,34 @@ class MascotNanaiApp {
   }
 
   async sendTestMessage() {
-    const message = document.getElementById("test-message")?.value || "hello";
-    this.updateTestResults(`テストメッセージ送信中: "${message}"`);
+    const message = document.getElementById("test-message")?.value || "テスト";
+    this.updateTestResults(`メッセージ送信テスト実行中: "${message}"`);
 
     try {
-      const result = await window.__TAURI__.invoke("send_message_to_ghost", {
-        message: message,
-      });
-      this.updateTestResults(`メッセージ送信成功: ${result}`);
-
-      // バルーンに応答を表示
-      this.showBalloon(result || "テストメッセージを送信しました");
-      setTimeout(() => this.hideBalloon(), 3000);
+      const result = await globalThis.__TAURI__.invoke(
+        "send_message_to_ghost",
+        {
+          message: message,
+        }
+      );
+      this.updateTestResults(
+        `メッセージ送信成功: ${JSON.stringify(result, null, 2)}`
+      );
     } catch (error) {
       this.updateTestResults(`メッセージ送信エラー: ${error}`);
     }
   }
 
   async testPathResolve() {
-    const testPath =
-      document.getElementById("path-test-input")?.value || "../assets/ghost";
+    const testPath = document.getElementById("test-path")?.value || "./test";
     this.updateTestResults(`パス解決テスト実行中: "${testPath}"`);
 
     try {
-      const result = await window.__TAURI__.invoke("resolve_asset_path", {
+      const result = await globalThis.__TAURI__.invoke("resolve_asset_path", {
         path: testPath,
       });
       this.updateTestResults(
-        `パス解決成功:\n入力: ${result.input}\n解決: ${result.resolved}`
+        `パス解決成功: ${JSON.stringify(result, null, 2)}`
       );
     } catch (error) {
       this.updateTestResults(`パス解決エラー: ${error}`);
@@ -981,7 +983,7 @@ class MascotNanaiApp {
     });
   }
 
-  async loadSystemInfo() {
+  loadSystemInfo() {
     try {
       const osInfoEl = document.getElementById("os-info");
       const tauriVersionEl = document.getElementById("tauri-version");
@@ -1051,6 +1053,6 @@ class MascotNanaiApp {
 }
 
 // アプリケーション開始
-window.addEventListener("DOMContentLoaded", () => {
-  window.mascotApp = new MascotNanaiApp();
+globalThis.addEventListener("DOMContentLoaded", () => {
+  globalThis.mascotApp = new MascotNanaiApp();
 });

@@ -5,6 +5,19 @@
   box-sizing: border-box;
 }
 
+/* アクセシビリティ用の非表示要素 */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: transparent;
@@ -339,7 +352,8 @@ body {
   margin-bottom: 20px;
 }
 
-.form-section label {
+.form-section label,
+.form-section .form-label {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;

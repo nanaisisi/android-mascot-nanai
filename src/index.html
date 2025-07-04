@@ -179,6 +179,7 @@
 
   <body>
     <!-- 透過背景マスコットアプリ -->
+    <h1 class="visually-hidden">Mascot Nanai - 透過マスコットアプリ</h1>
     <div class="container">
       <!-- 右上メニューボタンのみ -->
       <div class="top-right-menu">
@@ -249,17 +250,17 @@
     <div id="ghost-modal-content" style="display: none">
       <h2>👻 ゴースト管理</h2>
       <div class="form-section">
-        <label>現在のゴースト:</label>
+        <span class="form-label">現在のゴースト:</span>
         <div class="current-ghost" id="current-ghost">未選択</div>
       </div>
       <div class="form-section">
-        <label>利用可能なゴースト:</label>
+        <span class="form-label">利用可能なゴースト:</span>
         <div class="ghost-list" id="ghost-list">
           <div class="loading">ゴーストを読み込み中...</div>
         </div>
       </div>
       <div class="form-section">
-        <label>ゴーストディレクトリ:</label>
+        <span class="form-label">ゴーストディレクトリ:</span>
         <input type="text" id="ghost-directory" value="assets/ghost" />
         <button id="refresh-ghosts-btn">更新</button>
       </div>
@@ -268,11 +269,11 @@
     <div id="balloon-modal-content" style="display: none">
       <h2>💭 バルーン管理</h2>
       <div class="form-section">
-        <label>現在のバルーン:</label>
+        <span class="form-label">現在のバルーン:</span>
         <div class="current-balloon" id="current-balloon">デフォルト</div>
       </div>
       <div class="form-section">
-        <label>利用可能なバルーン:</label>
+        <span class="form-label">利用可能なバルーン:</span>
         <div class="balloon-list" id="balloon-list">
           <div class="balloon-item active" data-balloon="default">
             <span>デフォルト</span>
@@ -280,7 +281,7 @@
         </div>
       </div>
       <div class="form-section">
-        <label>バルーンディレクトリ:</label>
+        <span class="form-label">バルーンディレクトリ:</span>
         <input type="text" id="balloon-directory" value="assets/balloon" />
         <button id="refresh-balloons-btn">更新</button>
       </div>
@@ -289,12 +290,12 @@
     <div id="scan-modal-content" style="display: none">
       <h2>🔍 スキャンと検出</h2>
       <div class="form-section">
-        <label>スキャン対象:</label>
+        <span class="form-label">スキャン対象:</span>
         <input type="text" id="scan-path" value="assets/" />
         <button id="start-scan-btn">スキャン開始</button>
       </div>
       <div class="form-section">
-        <label>スキャン結果:</label>
+        <span class="form-label">スキャン結果:</span>
         <div class="scan-results" id="scan-results">
           <div class="info">
             スキャンボタンを押してファイルを検出してください。
@@ -302,7 +303,7 @@
         </div>
       </div>
       <div class="form-section">
-        <label>デバッグ情報:</label>
+        <span class="form-label">デバッグ情報:</span>
         <div class="debug-info" id="scan-debug-info">
           <div class="info">スキャン時のデバッグ情報がここに表示されます。</div>
         </div>
@@ -312,7 +313,7 @@
     <div id="test-modal-content" style="display: none">
       <h2>🧪 テスト機能</h2>
       <div class="form-section">
-        <label>SHIORI テスト:</label>
+        <span class="form-label">SHIORI テスト:</span>
         <div class="test-controls">
           <button id="test-shiori-init">SHIORI初期化</button>
           <button id="test-shiori-request">リクエスト送信</button>
@@ -320,7 +321,7 @@
         </div>
       </div>
       <div class="form-section">
-        <label>テストメッセージ:</label>
+        <span class="form-label">テストメッセージ:</span>
         <input
           type="text"
           id="test-message"
@@ -330,7 +331,7 @@
         <button id="send-test-message">メッセージ送信</button>
       </div>
       <div class="form-section">
-        <label>パステスト:</label>
+        <span class="form-label">パステスト:</span>
         <div class="path-test-controls">
           <input
             type="text"
@@ -342,7 +343,7 @@
         </div>
       </div>
       <div class="form-section">
-        <label>テスト結果:</label>
+        <span class="form-label">テスト結果:</span>
         <div class="test-results" id="test-results">
           <div class="info">テストボタンを押して結果を確認してください。</div>
         </div>
@@ -352,31 +353,31 @@
     <div id="settings-modal-content" style="display: none">
       <h2>⚙️ 設定</h2>
       <div class="form-section">
-        <label>
+        <span class="form-label">
           <input type="checkbox" id="auto-load-ghost" checked />
           自動ゴースト読み込み
-        </label>
+        </span>
       </div>
       <div class="form-section">
-        <label>
+        <span class="form-label">
           <input type="checkbox" id="enable-notifications" checked />
           通知を有効化
-        </label>
+        </span>
       </div>
       <div class="form-section">
-        <label>
+        <span class="form-label">
           <input type="checkbox" id="dark-mode" />
           ダークモード
-        </label>
+        </span>
       </div>
       <div class="form-section">
-        <label>
+        <span class="form-label">
           <input type="checkbox" id="always-on-top" checked />
           常に最前面に表示
-        </label>
+        </span>
       </div>
       <div class="form-section">
-        <label>ゴースト表示サイズ:</label>
+        <span class="form-label">ゴースト表示サイズ:</span>
         <select id="ghost-size">
           <option value="small">小</option>
           <option value="medium" selected>中</option>
@@ -384,7 +385,7 @@
         </select>
       </div>
       <div class="form-section">
-        <label>デバッグレベル:</label>
+        <span class="form-label">デバッグレベル:</span>
         <select id="debug-level">
           <option value="error">エラーのみ</option>
           <option value="warn">警告以上</option>
@@ -401,7 +402,7 @@
     <div id="debug-modal-content" style="display: none">
       <h2>🐛 デバッグ情報</h2>
       <div class="form-section">
-        <label>システム情報:</label>
+        <span class="form-label">システム情報:</span>
         <div class="debug-info" id="system-info">
           <div class="info-item">OS: <span id="os-info">取得中...</span></div>
           <div class="info-item">
@@ -413,7 +414,7 @@
         </div>
       </div>
       <div class="form-section">
-        <label>ログレベル:</label>
+        <span class="form-label">ログレベル:</span>
         <select id="log-level">
           <option value="trace">詳細</option>
           <option value="debug" selected>デバッグ</option>
@@ -424,7 +425,7 @@
         <button id="apply-log-level">適用</button>
       </div>
       <div class="form-section">
-        <label>ログ出力:</label>
+        <span class="form-label">ログ出力:</span>
         <div class="log-output" id="log-output">
           <div class="log-entry info">デバッグログがここに表示されます。</div>
         </div>
