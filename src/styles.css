@@ -593,6 +593,35 @@ button:active {
     transform: translateY(0);
 }
 
+/* ===========================================
+   iframe メニュースタイル
+   =========================================== */
+.menu-iframe-container {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 10000 !important;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    overflow: hidden;
+    background: white;
+    border: 2px solid #ddd;
+}
+
+.menu-iframe-container iframe {
+    display: block;
+    border: none;
+    border-radius: 6px;
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .menu-iframe-container {
+        background: #2b2b2b;
+        border-color: #555;
+    }
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
     .main-display {

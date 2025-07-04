@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            font-family: Arial, sans-serif;
+        }
+        
+        .menu-container {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 99999;
+        }
+        
+        .menu-btn {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 50%;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .menu-btn:hover {
+            background: #f0f0f0;
+            transform: scale(1.1);
+        }
+        
+        .menu-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            display: none;
+        }
+        
+        .menu-dropdown.show {
+            display: block !important;
+        }
+        
+        .menu-item {
+            display: block;
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .menu-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+        }
+        
+        .modal.show {
+            display: flex !important;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-container">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <div class="menu-dropdown" id="dropdown">
+            <button class="menu-item" onclick="openModal('ゴースト管理')">👻 ゴースト管理</button>
+            <button class="menu-item" onclick="openModal('バルーン管理')">💭 バルーン管理</button>
+            <button class="menu-item" onclick="openModal('スキャン')">🔍 スキャン</button>
+            <button class="menu-item" onclick="openModal('テスト')">🧪 テスト</button>
+            <button class="menu-item" onclick="openModal('設定')">⚙️ 設定</button>
+            <button class="menu-item" onclick="openModal('デバッグ')">🐛 デバッグ</button>
+            <button class="menu-item" onclick="openModal('ヘルプ')">❓ ヘルプ</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div id="modal-text">モーダル内容がここに表示されます</div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            console.log('メニューボタンクリック');
+            const dropdown = document.getElementById('dropdown');
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+                console.log('メニューを閉じました');
+            } else {
+                dropdown.classList.add('show');
+                console.log('メニューを開きました');
+            }
+        }
+        
+        function openModal(title) {
+            console.log('モーダルを開きます:', title);
+            document.getElementById('modal-text').textContent = title + ' の機能です';
+            document.getElementById('modal').classList.add('show');
+            document.getElementById('dropdown').classList.remove('show');
+        }
+        
+        function closeModal() {
+            console.log('モーダルを閉じます');
+            document.getElementById('modal').classList.remove('show');
+        }
+        
+        // メニュー外クリックで閉じる
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('dropdown');
+            const menuBtn = document.querySelector('.menu-btn');
+            
+            if (!menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+        
+        // ESCキーでモーダルを閉じる
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.getElementById('dropdown').classList.remove('show');
+            }
+        });
+        
+        console.log('メニューテストページが読み込まれました');
+    </script>
+</body>
+</html>

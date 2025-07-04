@@ -22,28 +22,41 @@ class MascotNanaiApp {
   }
 
   async init() {
-    console.log('👻 Mascot Nanai 透過マスコット版開始...');
+    console.log('=== Mascot Nanai 初期化開始 ===');
+    console.log('Tauri環境:', typeof window.__TAURI__ !== 'undefined');
+    console.log('DOM読み込み状況:', document.readyState);
     
     try {
       // UI環境の初期化
+      console.log('UI環境初期化中...');
       await this.initUIEnvironment();
+      console.log('UI環境初期化完了');
       
       // イベントリスナーの設定
+      console.log('イベントリスナー設定中...');
       this.setupEventListeners();
+      console.log('イベントリスナー設定完了');
       
       // 設定読み込み
+      console.log('設定読み込み中...');
       this.loadSettings();
+      console.log('設定読み込み完了:', this.settings);
       
       // UI設定の適用
+      console.log('UI設定適用中...');
       this.applyGhostSize();
+      console.log('UI設定適用完了');
       
       // 自動ゴースト読み込み
       if (this.settings.autoLoadGhost) {
+        console.log('自動ゴースト読み込み開始...');
         await this.autoLoadGhost();
+        console.log('自動ゴースト読み込み完了');
       }
       
       // 初期化完了
       this.isInitialized = true;
+      console.log('=== Mascot Nanai 初期化完了 ===');
       
       // 初期状態では何も表示しない
       this.updateGhostCharacter(null);
@@ -178,89 +191,41 @@ class MascotNanaiApp {
   setupEventListeners() {
     console.log('🔧 イベントリスナー設定中...');
 
-    // 右上メニューボタン
+    // 右上メニューボタン（iframe版）
     const menuBtn = document.getElementById('menu-btn');
-    const menuDropdown = document.getElementById('menu-dropdown');
+    const menuIframeContainer = document.getElementById('menu-iframe-container');
     
     if (menuBtn) {
       menuBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        this.toggleMenu(menuDropdown);
-        console.log('メニューボタンクリック');
+        this.toggleIframeMenu(menuIframeContainer);
+        console.log('iframeメニューボタンクリック');
       });
-      console.log('✅ メニューボタンのイベントリスナー設定完了');
+      console.log('✅ iframeメニューボタンのイベントリスナー設定完了');
     } else {
       console.error('❌ メニューボタンが見つかりません');
     }
 
+    // iframe内からのメッセージ受信（既にindex.htmlで設定済み）
+    console.log('✅ iframeメッセージリスナーは既に設定済み');
+
     // メニュー外をクリックしたら閉じる
     document.addEventListener('click', () => {
-      this.hideMenu(menuDropdown);
+      this.hideIframeMenu(menuIframeContainer);
     });
 
-    // メニューアイテム
-    document.getElementById('ghost-btn')?.addEventListener('click', () => {
-      console.log('ゴーストボタンクリック');
-      this.hideMenu(menuDropdown);
-      this.showGhostModal();
-    });
+    // 旧メニューアイテム（削除済みのため、コメントアウト）
+    // これらのイベントリスナーはiframeメニューで処理される
     
-    document.getElementById('balloon-btn')?.addEventListener('click', () => {
-      console.log('バルーンボタンクリック');
-      this.hideMenu(menuDropdown);
-      this.showBalloonModal();
-    });
-    
-    document.getElementById('scan-btn')?.addEventListener('click', () => {
-      console.log('スキャンボタンクリック');
-      this.hideMenu(menuDropdown);
-      this.showScanModal();
-    });
-    
-    document.getElementById('test-btn')?.addEventListener('click', () => {
-      console.log('テストボタンクリック');
-      this.hideMenu(menuDropdown);
-      this.showTestModal();
-    });
-
-    document.getElementById('settings-btn')?.addEventListener('click', () => {
-      console.log('設定ボタンクリック');
-      this.hideMenu(menuDropdown);
-      this.showSettingsModal();
-    });
-    
-    document.getElementById('debug-btn')?.addEventListener('click', () => {
-      console.log('デバッグボタンクリック');
-      this.hideMenu(menuDropdown);
-      this.showDebugModal();
-    });
-    
-    document.getElementById('help-btn')?.addEventListener('click', () => {
-      console.log('ヘルプボタンクリック');
-      this.hideMenu(menuDropdown);
-      this.showHelpModal();
-    });
-    });
-    
-    document.getElementById('debug-btn')?.addEventListener('click', () => {
-      this.hideMenu(menuDropdown);
-      this.showDebugModal();
-    });
-    
-    document.getElementById('help-btn')?.addEventListener('click', () => {
-      this.hideMenu(menuDropdown);
-      this.showHelpModal();
-    });
-
     // ゴーストキャラクターのクリック
     this.elements.ghostCharacter?.addEventListener('click', () => {
       this.onGhostClick();
     });
 
-    // 右クリックでメニュー表示
+    // 右クリックでiframeメニュー表示
     document.addEventListener('contextmenu', (e) => {
       e.preventDefault();
-      this.toggleMenu(menuDropdown);
+      this.toggleIframeMenu(menuIframeContainer);
     });
 
     // モーダル制御
@@ -275,7 +240,7 @@ class MascotNanaiApp {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         this.hideModal();
-        this.hideMenu(menuDropdown);
+        this.hideIframeMenu(menuIframeContainer);
       } else if (e.ctrlKey && e.key === 'r') {
         e.preventDefault();
         this.refreshGhosts();
@@ -431,7 +396,32 @@ class MascotNanaiApp {
   }
 
   // ===========================================
-  // メニュー制御機能
+  // iframeメニュー制御機能
+  // ===========================================
+
+  toggleIframeMenu(menuContainer) {
+    if (!menuContainer) {
+      console.error('iframeメニューコンテナが見つかりません');
+      return;
+    }
+    
+    const isCurrentlyVisible = menuContainer.style.display !== 'none';
+    console.log(`iframeメニュー表示切り替え: ${isCurrentlyVisible ? '非表示' : '表示'}`);
+    
+    if (isCurrentlyVisible) {
+      menuContainer.style.display = 'none';
+    } else {
+      menuContainer.style.display = 'block';
+    }
+  }
+
+  hideIframeMenu(menuContainer) {
+    if (!menuContainer) return;
+    menuContainer.style.display = 'none';
+  }
+
+  // ===========================================
+  // 旧メニュー制御機能（後方互換性）
   // ===========================================
 
   toggleMenu(menu) {
@@ -1003,8 +993,6 @@ class MascotNanaiApp {
   updateStatus(text, connected = null) {
     // ステータス表示を無効化 - 右上メニューに集中するため
     console.log(`Status: ${text} (Connected: ${connected})`);
-  }
-    }
   }
 }
 

@@ -1,7 +1,6 @@
 use mascot_nanai_ui::open_shift_jis_file;
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use std::path::PathBuf;
-use std::sync::Arc;
 use tauri::Emitter;
 use tauri::Manager;
 
