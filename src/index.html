@@ -30,8 +30,8 @@
         const menuContainer = document.getElementById("menu-iframe-container");
         if (menuContainer) {
           const isVisible = menuContainer.style.display !== "none";
-          console.log(`現在の表示状態: ${isVisible ? '表示中' : '非表示'}`);
-          
+          console.log(`現在の表示状態: ${isVisible ? "表示中" : "非表示"}`);
+
           if (isVisible) {
             menuContainer.style.display = "none";
             console.log("iframeメニューを非表示にしました");
@@ -45,23 +45,25 @@
       }
 
       // iframe内からのメッセージを受信
-      window.addEventListener('message', (event) => {
-        console.log('=== 親ウィンドウでメッセージ受信 ===');
-        console.log('受信データ:', event.data);
-        
-        if (event.data.type === 'menu-action') {
+      window.addEventListener("message", (event) => {
+        console.log("=== 親ウィンドウでメッセージ受信 ===");
+        console.log("受信データ:", event.data);
+
+        if (event.data.type === "menu-action") {
           const action = event.data.action;
           console.log(`メニューアクション実行: ${action}`);
-          
+
           // メニューを非表示にする
-          const menuContainer = document.getElementById("menu-iframe-container");
+          const menuContainer = document.getElementById(
+            "menu-iframe-container"
+          );
           if (menuContainer) {
             menuContainer.style.display = "none";
             console.log("iframeメニューを非表示にしました");
           }
-          
+
           // アクションに応じてモーダルを開く
-          const contentId = action + '-modal-content';
+          const contentId = action + "-modal-content";
           console.log(`モーダルを開きます: ${contentId}`);
           openModal(contentId);
         }
@@ -69,7 +71,9 @@
 
       // 旧メニュー関数（後方互換性）
       function toggleMenuDirect() {
-        console.log("旧メニュー関数が呼び出されました - iframeメニューにリダイレクト");
+        console.log(
+          "旧メニュー関数が呼び出されました - iframeメニューにリダイレクト"
+        );
         toggleIframeMenu();
       }
 
@@ -187,15 +191,20 @@
           ☰
         </button>
         <!-- iframeメニュー -->
-        <div class="menu-iframe-container" id="menu-iframe-container" style="display: none;">
-          <iframe 
+        <div
+          class="menu-iframe-container"
+          id="menu-iframe-container"
+          style="display: none"
+        >
+          <iframe
             id="menu-iframe"
             src="menu-iframe.html"
             width="200"
             height="280"
             title="メニューオプション"
             loading="lazy"
-            style="border: none;">
+            style="border: none"
+          >
           </iframe>
         </div>
       </div>
