@@ -1,32 +1,134 @@
-> **AI関与について**: このドキュメントはGitHub
-> Copilotの支援により作成されました。キャラクター設定・仕様はオーナーユーザーとAIの協議により決定されています。
+# Mascot Nanai
 
-# 概要
+> **AI関与について**: このプロジェクトはGitHub Copilotの支援により開発されました。AI主導開発の実践例として、キャラクター設定・仕様・実装はオーナーユーザーとAIの協議により決定されています。
 
-Android向けの互換環境です。デスクトップ環境での動作確認を行って開発しています。
+## 🎭 概要
 
-# 呼び出し実装
+Mascot Nanaiは、**伺か（うかがか）**互換のデスクトップマスコットアプリケーションです。Android/Windows対応のクロスプラットフォーム・アプリケーションとして、**AI主導開発**により構築されています。
 
-呼び出し実装は未完了です。
-DLLの代わりに、内部的に呼び出して処理したらいいかなと。
+### 🌟 特徴
+- 🤖 **AI主導開発** - GitHub Copilotを活用した高品質な実装
+- 📱 **クロスプラットフォーム** - Android/Windows対応
+- 🔧 **モダンな技術** - Tauri + Rust + Web技術
+- 🎭 **伺か互換** - 既存の伺かゴーストとの互換性
+- 🎨 **拡張性** - Web技術によるカスタマイズ性
 
-「なし」
+## 🚀 クイックスタート
 
-# 実装
+### 📱 ユーザー向け
+1. **[インストール](docs/user/installation.md)** - アプリのインストール方法
+2. **[使用方法](docs/user/user-guide.md)** - 基本的な使用方法
+3. **[トラブルシューティング](docs/user/troubleshooting.md)** - 問題解決方法
 
-Androidでdllを代替するために<br> src内にcppディレクトリを配置、<br>
-内部に各shiori。<br> 内部的に呼び出して使用<br>
+### 👨‍💻 開発者向け
+1. **[貢献ガイド](CONTRIBUTING.md)** - プロジェクトへの貢献方法
+2. **[システムアーキテクチャ](docs/developer/architecture.md)** - システム構成
+3. **[AI主導開発](docs/AI_driven.md)** - AI活用開発手法
 
-# Tauri + Vanilla
+## 🛠️ 技術構成
 
-This template should help get you started developing with Tauri in vanilla HTML,
-CSS and Javascript.
+### フロントエンド
+- **HTML5 + CSS3 + Vanilla JavaScript** - 拡張性を重視したシンプルな構成
+- **iframe メニューシステム** - 独立性と柔軟性を両立
 
-## Recommended IDE Setup
+### バックエンド
+- **Rust** - 高性能・安全性・クロスプラットフォーム対応
+- **Tauri** - 軽量なデスクトップアプリケーションフレームワーク
+
+### SHIORI連携
+- **Git サブモジュール** - 各SHIORIエンジンの統合
+- **クロスプラットフォーム対応** - DLLに依存しない実装
+
+## 🏗️ 開発環境
+
+### 必要なツール
+- **Rust** (最新 stable) - メインの開発言語
+- **Node.js** (LTS) - フロントエンドツール
+- **Git** - バージョン管理・サブモジュール
+- **Android SDK** - Android版ビルド用
+
+### ビルド手順
+```bash
+# リポジトリのクローン
+git clone https://github.com/nanaisisi/android-mascot-nanai.git
+cd android-mascot-nanai
+
+# サブモジュールの初期化
+git submodule update --init
+
+# デスクトップ版の開発実行
+cargo tauri dev
+
+# Android版のビルド
+cargo tauri android build -d -t aarch64
+```
+
+## 📚 包括的なドキュメント
+
+このプロジェクトは、**AI主導開発**の実践例として、包括的なドキュメントを提供しています。
+
+### 📖 主要ドキュメント
+- **[📋 ドキュメント一覧](docs/README.md)** - 全ドキュメントの概要
+- **[🎯 プロジェクト仕様](PROJECT-SPEC.md)** - 詳細な技術仕様
+- **[✅ 開発計画](TODO.md)** - 現在の開発状況と計画
+- **[📄 ドキュメント提案](docs/documentation-proposal.md)** - 今回作成したドキュメント戦略
+
+### 🎯 目的別ガイド
+- **初めて使う方** → [インストールガイド](docs/user/installation.md)
+- **使い方を知りたい** → [ユーザーガイド](docs/user/user-guide.md)
+- **開発に参加したい** → [貢献ガイド](CONTRIBUTING.md)
+- **技術を理解したい** → [アーキテクチャ](docs/developer/architecture.md)
+- **AI開発に興味がある** → [AI主導開発](docs/AI_driven.md)
+
+## 🎭 伺か互換性
+
+### 対応状況
+- ✅ **基本的なゴースト表示** - キャラクター描画・アニメーション
+- ✅ **シェル切り替え** - 外見の変更
+- ✅ **バルーン表示** - 会話システム
+- ✅ **基本メニュー** - 右クリックメニュー
+- 🔄 **SHIORI連携** - 会話エンジン（実装中）
+- 🔄 **ネットワーク更新** - 自動更新機能（予定）
+
+### 互換性の詳細
+詳細な互換性情報は[伺か標準仕様](docs/standard-ghost-spec.md)を参照してください。
+
+## 🤖 AI主導開発について
+
+このプロジェクトは、**GitHub Copilot**を活用した**AI主導開発**の実践例です。
+
+### 開発体制
+- **AI（GitHub Copilot）**: コード実装・ドキュメント作成・技術検討
+- **人間（オーナー）**: 方針決定・品質管理・最終判断
+- **協調開発**: 設計議論・問題解決・品質向上
+
+### 特徴
+- **高品質な実装** - AIによる一貫性のあるコード
+- **包括的なドキュメント** - 自動化された文書作成
+- **迅速な開発** - AI支援による効率的な実装
+- **学習と改善** - 継続的な開発手法の改善
+
+詳細は[AI主導開発ドキュメント](docs/AI_driven.md)を参照してください。
+
+## 💻 推奨IDE設定
 
 - [VS Code](https://code.visualstudio.com/) +
   [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) +
   [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+
+## 🤝 コミュニティ
+
+### サポート・質問
+- **[GitHub Issues](https://github.com/nanaisisi/android-mascot-nanai/issues)** - バグ報告・機能要望
+- **[GitHub Discussions](https://github.com/nanaisisi/android-mascot-nanai/discussions)** - 一般的な質問・議論
+
+### 貢献方法
+- **バグ報告** - 問題の発見と報告
+- **機能要望** - 新しいアイデアの提案
+- **コード貢献** - 実装の改善・追加
+- **ドキュメント改善** - 文書の修正・追加
+
+詳細は[貢献ガイド](CONTRIBUTING.md)を参照してください。
 
 # How to build
 
