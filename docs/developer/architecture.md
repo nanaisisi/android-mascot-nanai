@@ -1,12 +1,11 @@
+> **AI 関与について**: このドキュメントは GitHub
+> Copilot の支援により作成されました。キャラクター設定・仕様はオーナーユーザーと AI の協議により決定されています。
+
 # システムアーキテクチャ - Mascot Nanai
-
-> **AI関与について**: このドキュメントはGitHub Copilotの支援により作成されました。
-
-このドキュメントでは、Mascot Nanaiのシステムアーキテクチャについて詳しく説明します。
 
 ## 概要
 
-Mascot Nanaiは、Tauri フレームワークを使用したクロスプラットフォーム・デスクトップマスコットアプリケーションです。フロントエンドにWeb技術（HTML/CSS/JavaScript）、バックエンドにRustを使用し、AI主導開発により構築されています。
+Mascot Nanai は、Tauri フレームワークを使用したクロスプラットフォーム・デスクトップマスコットアプリケーションです。フロントエンドに Web 技術（HTML/CSS/JavaScript）、バックエンドに Rust を使用し、AI 主導開発により構築されています。
 
 ## 全体アーキテクチャ
 
@@ -52,7 +51,8 @@ Mascot Nanaiは、Tauri フレームワークを使用したクロスプラッ�
 #### 主要コンポーネント
 
 ##### Main UI (`src/index.html`)
-- **責務**: メインアプリケーションUI
+
+- **責務**: メインアプリケーション UI
 - **技術**: HTML5 + CSS3 + Vanilla JavaScript
 - **機能**:
   - ゴースト表示
@@ -60,15 +60,17 @@ Mascot Nanaiは、Tauri フレームワークを使用したクロスプラッ�
   - モーダル制御
 
 ##### Menu System (`src/menu-iframe.html`)
+
 - **責務**: 独立したメニューシステム
-- **技術**: iframe ベースの独立UI
+- **技術**: iframe ベースの独立 UI
 - **機能**:
   - 伺か標準メニューの表示
   - 親ウィンドウとの通信
   - メニュー項目の動的生成
 
 ##### Modal System
-- **責務**: オーバーレイUI
+
+- **責務**: オーバーレイ UI
 - **技術**: CSS + JavaScript
 - **機能**:
   - ゴースト管理
@@ -86,6 +88,7 @@ UI Update ← JavaScript Handler ← Tauri Event ← Rust Response
 ### 2. Tauri Bridge レイヤー
 
 #### Tauri Commands
+
 ```rust
 // ゴースト管理
 #[tauri::command]
@@ -104,6 +107,7 @@ async fn save_settings(settings: String) -> Result<(), String>
 ```
 
 #### Tauri Events
+
 ```rust
 // UI更新イベント
 emit("ghost-loaded", ghost_info);
@@ -116,6 +120,7 @@ emit("error-occurred", error_details);
 #### Application Core
 
 ##### Ghost Manager
+
 - **責務**: ゴースト管理
 - **機能**:
   - ゴーストファイルのスキャン
@@ -137,10 +142,11 @@ impl GhostManager {
 ```
 
 ##### SHIORI Engine
-- **責務**: SHIORI連携
+
+- **責務**: SHIORI 連携
 - **機能**:
-  - SHIORI DLLの識別
-  - SHIORIプロトコルの実装
+  - SHIORI DLL の識別
+  - SHIORI プロトコルの実装
   - イベント処理
 
 ```rust
@@ -162,7 +168,8 @@ impl ShioriEngine {
 ```
 
 ##### UI Controller
-- **責務**: UI状態管理
+
+- **責務**: UI 状態管理
 - **機能**:
   - ウィンドウ管理
   - イベント処理
@@ -272,16 +279,16 @@ src-tauri/
 
 ```javascript
 // Tauri コマンドの呼び出し
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke } from "@tauri-apps/api/tauri";
 
 // ゴーストスキャン
-const result = await invoke('scan_ghosts', { 
-    ghostPath: '/path/to/ghosts' 
+const result = await invoke("scan_ghosts", {
+  ghostPath: "/path/to/ghosts",
 });
 
 // ゴースト読み込み
-const ghost = await invoke('load_ghost', { 
-    ghostName: 'example_ghost' 
+const ghost = await invoke("load_ghost", {
+  ghostName: "example_ghost",
 });
 ```
 
@@ -301,24 +308,30 @@ app.emit_all("ghost-loaded", GhostLoadedPayload {
 
 ```javascript
 // 親ウィンドウ → iframe
-iframe.contentWindow.postMessage({
-    type: 'ghost-changed',
-    data: ghostInfo
-}, '*');
+iframe.contentWindow.postMessage(
+  {
+    type: "ghost-changed",
+    data: ghostInfo,
+  },
+  "*"
+);
 
 // iframe → 親ウィンドウ
-window.parent.postMessage({
-    type: 'menu-selected',
-    data: { action: 'open-settings' }
-}, '*');
+window.parent.postMessage(
+  {
+    type: "menu-selected",
+    data: { action: "open-settings" },
+  },
+  "*"
+);
 ```
 
 ## セキュリティ
 
 ### Tauri セキュリティ
 
-- **CSP (Content Security Policy)**: 厳格なCSP設定
-- **API制限**: 必要最小限のAPI露出
+- **CSP (Content Security Policy)**: 厳格な CSP 設定
+- **API 制限**: 必要最小限の API 露出
 - **サンドボックス**: フロントエンドのサンドボックス実行
 
 ### ファイルアクセス
@@ -330,7 +343,7 @@ pub fn safe_read_file(path: &Path) -> Result<String, Error> {
     if !path.starts_with(&app_data_dir()) {
         return Err(Error::InvalidPath);
     }
-    
+
     // ファイル読み込み
     std::fs::read_to_string(path)
         .map_err(|e| Error::FileRead(e))
@@ -353,7 +366,7 @@ pub fn safe_read_file(path: &Path) -> Result<String, Error> {
 #[cfg(debug_assertions)]
 mod perf {
     use std::time::Instant;
-    
+
     pub fn measure_time<F, R>(name: &str, f: F) -> R
     where
         F: FnOnce() -> R,
@@ -380,7 +393,7 @@ pub trait Plugin {
 }
 ```
 
-### カスタムSHIORI
+### カスタム SHIORI
 
 ```rust
 pub trait CustomShiori {
@@ -412,10 +425,10 @@ const LOG_LEVEL: log::LevelFilter = log::LevelFilter::Info;
 pub enum AppError {
     #[error("Ghost not found: {0}")]
     GhostNotFound(String),
-    
+
     #[error("SHIORI error: {0}")]
     ShioriError(String),
-    
+
     #[error("File system error: {0}")]
     FileSystemError(#[from] std::io::Error),
 }
@@ -423,6 +436,6 @@ pub enum AppError {
 
 ---
 
-*このドキュメントは継続的に更新され、システムの進化に合わせて改善されます。*
+_このドキュメントは継続的に更新され、システムの進化に合わせて改善されます。_
 
-*最終更新: 2025年7月11日*
+_最終更新: 2025 年 7 月 11 日_

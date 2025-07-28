@@ -1,11 +1,11 @@
-> **AI関与について**: このドキュメントはGitHub
-> Copilotの支援により作成されました。オーナーユーザーは主に方針決定と技術検討を担当し、コード実装やドキュメント作成はAIが主要な役割を果たしています。
+> **AI 関与について**: このドキュメントは GitHub
+> Copilot の支援により作成されました。オーナーユーザーは主に方針決定と技術検討を担当し、コード実装やドキュメント作成は AI が主要な役割を果たしています。
 
 # 開発手法・技術選択
 
 ## 概要
 
-Android向けSSP互換環境の開発における技術選択と開発手法の記録。
+Android 向け SSP 互換環境の開発における技術選択と開発手法の記録。
 
 ## 技術スタック選択
 
@@ -13,14 +13,14 @@ Android向けSSP互換環境の開発における技術選択と開発手法の�
 
 #### 選択理由
 
-- **クロスプラットフォーム**: Windows/Android/Linux対応
-- **ユーザー拡張性**: Web技術ベースでの高いアクセシビリティ
-- **Web技術活用**: HTML/CSS/JavaScriptでのUI開発（拡張性のため）
-- **セキュリティ**: Rustの安全性とTauriのサンドボックス
-- **ネイティブアクセス**: システムAPIへの直接アクセス可能
+- **クロスプラットフォーム**: Windows/Android/Linux 対応
+- **ユーザー拡張性**: Web 技術ベースでの高いアクセシビリティ
+- **Web 技術活用**: HTML/CSS/JavaScript での UI 開発（拡張性のため）
+- **セキュリティ**: Rust の安全性と Tauri のサンドボックス
+- **ネイティブアクセス**: システム API への直接アクセス可能
 
 > **ユーザー拡張性について**:
-> Rustでの拡張開発は一般ユーザーには学習コストが高いため、広く普及しているWeb技術をベースとすることで、より多くの開発者が拡張機能を作成できるようにしています。
+> Rust での拡張開発は一般ユーザーには学習コストが高いため、広く普及している Web 技術をベースとすることで、より多くの開発者が拡張機能を作成できるようにしています。
 
 #### 代替案との比較
 
@@ -29,15 +29,15 @@ Android向けSSP互換環境の開発における技術選択と開発手法の�
 | 技術         | 利点               | 欠点             | 採用理由                |
 | ------------ | ------------------ | ---------------- | ----------------------- |
 | **Tauri**    | 軽量、高速、拡張性 | 学習コスト       | ✅ 総合的優位性         |
-| Electron     | 成熟、豊富な事例   | 重い、メモリ消費 | ❌ Android非対応        |
-| Flutter      | ネイティブ性能     | Web技術未使用    | ❌ SHIORI統合困難       |
+| Electron     | 成熟、豊富な事例   | 重い、メモリ消費 | ❌ Android 非対応       |
+| Flutter      | ネイティブ性能     | Web 技術未使用   | ❌ SHIORI 統合困難      |
 | React Native | モバイル特化       | 複雑性           | ❌ デスクトップ対応不足 |
 
-### フロントエンド: 単純なHTML方式
+### フロントエンド: 単純な HTML 方式
 
 #### 選択理由
 
-- **学習コストの低さ**: 基本的なWeb技術のみ
+- **学習コストの低さ**: 基本的な Web 技術のみ
 - **デバッグの容易さ**: ブラウザ開発者ツールが使用可能
 - **拡張性**: 将来的なフレームワーク導入が容易
 - **軽量性**: 最小限の依存関係
@@ -54,14 +54,14 @@ Frontend: Vanilla HTML + CSS + JavaScript
 #### フレームワーク非採用の理由
 
 - **React/Vue**: 初期開発では過剰な複雑性
-- **Android制約**: Single Activity内での動作に最適化
-- **SSP互換**: シンプルなUI要件に適合
+- **Android 制約**: Single Activity 内での動作に最適化
+- **SSP 互換**: シンプルな UI 要件に適合
 - **開発方針**: フレームワークは基本的に導入しない方針
 
 > **過去の試行**:
-> 当初はRustのDioxusフレームワークを検討していましたが、拡張性とシンプル性を重視し、純粋なWeb技術に回帰した。
+> 当初は Rust の Dioxus フレームワークを検討していましたが、拡張性とシンプル性を重視し、純粋な Web 技術に回帰した。
 
-## DLL代替戦略
+## DLL 代替戦略
 
 ### Git サブモジュール方式
 
@@ -71,14 +71,14 @@ Frontend: Vanilla HTML + CSS + JavaScript
 # SATORI SHIORI サブモジュール追加
 git submodule add https://github.com/ukatech/satoriya-shiori.git src/cpp/satoriya-shiori
 
-# YAYA SHIORI サブモジュール追加  
+# YAYA SHIORI サブモジュール追加
 git submodule add https://github.com/YAYA-shiori/yaya-shiori.git src/cpp/yaya-shiori
 ```
 
 #### 利点
 
 1. **最新版追従**: 上流リポジトリの更新を簡単に取り込み
-2. **ライセンス分離**: 各SHIORIのライセンスを独立管理
+2. **ライセンス分離**: 各 SHIORI のライセンスを独立管理
 3. **開発履歴**: 独立した開発履歴の維持
 
 #### 管理方針
@@ -89,8 +89,8 @@ git submodule add https://github.com/YAYA-shiori/yaya-shiori.git src/cpp/yaya-sh
 
 ### ビルド統合
 
-> **DLL形式回避について**: 従来のWindows
-> DLL形式を回避してクロスプラットフォーム対応するため、ビルドプロセスは複雑になります。
+> **DLL 形式回避について**: 従来の Windows
+> DLL 形式を回避してクロスプラットフォーム対応するため、ビルドプロセスは複雑になります。
 
 ```rust
 // build.rs での統合例
@@ -99,7 +99,7 @@ fn main() {
     if !Path::new("src/cpp/satoriya-shiori/satoriya").exists() {
         panic!("Git submodules not initialized. Run: git submodule update --init");
     }
-    
+
     // SHIORIのビルド
     build_shiori_engines();
 }
@@ -157,12 +157,12 @@ Template Ghost Structure:
 └── Android SDK (Android版ビルド用)
 ```
 
-### IDEとプラグイン
+### IDE とプラグイン
 
-- **VS Code**: 推奨IDE
-- **rust-analyzer**: Rust言語サポート
-- **Tauri Extension**: Tauri開発支援
-- **GitLens**: Git管理支援
+- **VS Code**: 推奨 IDE
+- **rust-analyzer**: Rust 言語サポート
+- **Tauri Extension**: Tauri 開発支援
+- **GitLens**: Git 管理支援
 
 ### ビルド設定
 
@@ -207,28 +207,28 @@ jobs:
 ### コード品質
 
 - **rustfmt**: コードフォーマット統一
-- **clippy**: Lintチェック
+- **clippy**: Lint チェック
 - **cargo audit**: セキュリティ脆弱性チェック
 
 ## 将来拡張計画
 
 ### ユーザー拡張機能
 
-1. **プラグインAPI**: WEB系でのプラグイン開発
-2. **カスタムSHIORI**: 本アプリ独自のSHIORI
-3. **UI カスタマイズ**: テーマ・レイアウト変更、balloon他
+1. **プラグイン API**: WEB 系でのプラグイン開発
+2. **カスタム SHIORI**: 本アプリ独自の SHIORI
+3. **UI カスタマイズ**: テーマ・レイアウト変更、balloon 他
 
 ### プラットフォーム拡張
 
-1. **Windows対応** Windows対応
-2. **iOS対応**: Tauri のiOS サポート活用
-3. **Web版**: WASM でのブラウザ版
-4. **デスクトップ**: Windows/Linux/macOS 対応、UI最適化
+1. **Windows 対応** Windows 対応
+2. **iOS 対応**: Tauri の iOS サポート活用
+3. **Web 版**: WASM でのブラウザ版
+4. **デスクトップ**: Windows/Linux/macOS 対応、UI 最適化
 
 ### 技術的改善
 
-1. **3D対応**
-2. **AI技術対応**
+1. **3D 対応**
+2. **AI 技術対応**
 3. **パフォーマンス**: メモリ使用量・起動時間の最適化
 4. **セキュリティ**: サンドボックス強化・権限最小化
 5. **アクセシビリティ**: 画面読み上げ・キーボード操作対応
@@ -251,7 +251,7 @@ jobs:
 
 #### Phase 1: ゴースト情報読み込み機能
 
-- **優先度**: 最高（SHIORI不要で動作可能）
+- **優先度**: 最高（SHIORI 不要で動作可能）
 - **内容**:
   - `assets/ghost/` ディレクトリのスキャン
   - `descript.txt` の解析・パース
@@ -262,12 +262,12 @@ jobs:
 
 - **優先度**: 高（基本機能）
 - **内容**:
-  - surface画像の読み込み・表示
+  - surface 画像の読み込み・表示
   - アニメーション対応
   - タッチ・ドラッグインタラクション
-  - 基本的なUI制御
+  - 基本的な UI 制御
 
-#### Phase 3: SSP互換性確保
+#### Phase 3: SSP 互換性確保
 
 - **優先度**: 高（互換性維持）
 - **内容**:
@@ -276,23 +276,23 @@ jobs:
   - 基本的なコマンド体系
   - エラーハンドリング
 
-#### Phase 4: SHIORI接続システム
+#### Phase 4: SHIORI 接続システム
 
 - **優先度**: 中（本格機能）
 - **内容**:
-  - DLL識別・ロード機能
-  - SHIORI APIエミュレーション
+  - DLL 識別・ロード機能
+  - SHIORI API エミュレーション
   - メッセージ処理システム
   - 状態管理・永続化
 
-### SHIORI識別・対応戦略
+### SHIORI 識別・対応戦略
 
-#### DLL識別方式
+#### DLL 識別方式
 
 ```
 ゴーストディレクトリ/ghost/master/ 内での DLL 検索:
 ├── satori.dll → SATORI SHIORI 使用
-├── yaya.dll   → YAYA SHIORI 使用  
+├── yaya.dll   → YAYA SHIORI 使用
 ├── 他のDLL    → 将来対応予定
 └── DLL不在    → 静的ゴースト（表示のみ）
 ```
@@ -301,8 +301,8 @@ jobs:
 
 1. **YAYA SHIORI**: 最も普及、優先実装
 2. **SATORI SHIORI**: 次に普及、二次実装
-3. **カスタムSHIORI**: 本ソフトウェア専用
-4. **他のSHIORI**: コミュニティ要望に応じて対応
+3. **カスタム SHIORI**: 本ソフトウェア専用
+4. **他の SHIORI**: コミュニティ要望に応じて対応
 
 #### 技術実装
 
@@ -310,7 +310,7 @@ jobs:
 // SHIORI識別例
 fn detect_shiori_type(ghost_path: &Path) -> SHIORIType {
     let master_path = ghost_path.join("ghost/master");
-    
+
     if master_path.join("yaya.dll").exists() {
         SHIORIType::YAYA
     } else if master_path.join("satori.dll").exists() {
@@ -323,26 +323,26 @@ fn detect_shiori_type(ghost_path: &Path) -> SHIORIType {
 
 ### クロスプラットフォーム対応
 
-#### 本ソフトウェア専用SHIORI
+#### 本ソフトウェア専用 SHIORI
 
 - **特徴**:
-  - Rust文法
+  - Rust 文法
 
 ## 開発体制
 
-#### AI支援開発
+#### AI 支援開発
 
 - **主要ツール**: GitHub Copilot
 - **役割分担**:
   - **オーナーユーザー**: プロジェクト方針決定、要件定義、技術検討
   - **AI (GitHub Copilot)**: コード生成支援、実装サポート、ドキュメント作成
 - **開発プロセス**:
-  - Tauriと伺か系技術の参考資料調査
+  - Tauri と伺か系技術の参考資料調査
   - AI との技術検討・設計議論
   - AI によるコード実装支援
   - オーナーによる方針確認・品質管理
 
-#### AI関与範囲
+#### AI 関与範囲
 
 - **コード実装**: AI が主要な実装を担当
 - **ドキュメント**: AI が作成または大幅に関与
